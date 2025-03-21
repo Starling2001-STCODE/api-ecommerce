@@ -11,10 +11,10 @@ class Cart extends BaseModel
         'status',
         'user_id',
     ];
-    public function user(){
+    public function users(){
         return $this->belongsTo(User::class); // (one to many)
     }
-    public function Cart_detail(){
+    public function cart_details(){
         return $this->hasMany(Cart_detail::class); // (one to many)
     }
 }

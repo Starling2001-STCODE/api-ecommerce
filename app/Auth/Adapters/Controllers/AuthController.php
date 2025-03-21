@@ -6,6 +6,7 @@ use App\Auth\Domain\Services\LoginService;
 use App\Auth\Domain\Services\LogoutService;
 use App\Auth\Domain\Services\MeService;
 use App\Auth\Http\Requests\LoginRequest;
+use Symfony\Component\Uid\Ulid;
 
 class AuthController
 {
@@ -23,6 +24,8 @@ class AuthController
 
     public function login(LoginRequest $request)
     {
+        session(['session_ulid' => (string) new Ulid()]);
+
         $user = $this->loginService->execute($request->username, $request->password);
         return response()->json($user, 200);
     }

@@ -11,13 +11,15 @@ class Cart_detail extends BaseModel
         'price_at_time',
         'cart_id',
         'product_id',
+        'created_at',
+        'updated_at',
     ];
     // Relación muchos a uno con Cart (un detalle pertenece a un carrito)
-    public function cart(){
+    public function carts(){
         return $this->belongsTo(Cart::class);
     }
     //Relacion muchos a uno con porducto(un detalle pertenece a un producto)
-    public function product(){
+    public function products(){
         return $this->belongsTo(Product::class);
     }   
 }

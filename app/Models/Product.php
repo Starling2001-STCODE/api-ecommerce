@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 
 class Product extends BaseModel
@@ -23,6 +22,7 @@ class Product extends BaseModel
         'category_id',
         'size_id',
         'user_id',
+        'img',
     ];
     protected $casts = [
         'id' => 'string', // ULID se maneja como string
@@ -58,6 +58,12 @@ class Product extends BaseModel
         return $query->whereHas('category', function ($query) use ($search) {
             $query->where('name', 'like', "%$search%");
             Log::info($query->toSql());
+        });
+    }
+    public function scopeSizeName($query, $search)
+    {
+        return $query->whereHas('size', function ($query) use ($search) {
+            $query->where('name', 'like', "%$search%");
         });
     }
     public function scopeTagsAll($query, array $tags){

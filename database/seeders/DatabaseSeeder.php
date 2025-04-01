@@ -12,12 +12,18 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'test User',
-            'email' => 'test@example.com',
-            'password' => bcrypt('password'),
-            'username' => 'test',
-            'role' => 'director',
+        $this->call([
+            // AttributeSeeder::class,
+            // CategorySeeder::class,
+            ProductSeeder::class,
         ]);
+        
+        // User::factory()->create([
+        //     'name' => 'test User',
+        //     'email' => 'test@example.com',
+        //     'password' => bcrypt('password'),
+        //     'username' => 'test',
+        //     'role' => 'director',
+        // ]);
     }
 }

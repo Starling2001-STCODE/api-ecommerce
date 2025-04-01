@@ -27,7 +27,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryPor
         $categoryModel = CategoryModel::create([
             'name' => $category->name,
         ]);
-        return new category($categoryModel->toArray());
+        return new Category($categoryModel->toArray());
     }
     public function findById(string $id): Category
     {

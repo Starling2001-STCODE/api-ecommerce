@@ -6,12 +6,16 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\GuestSessionMiddleware;
+use App\Http\Middleware\RequestTimerMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -22,14 +26,19 @@ return Application::configure(basePath: dirname(__DIR__))
             __DIR__ . '/../routes/sizes.php',
             __DIR__ . '/../routes/categories.php',
             __DIR__ . '/../routes/cart.php',
+            __DIR__ . '/../routes/publicProducts.php',
+            __DIR__ . '/../routes/attributes.php',
+            __DIR__ . '/../routes/attributeValue.php',
+            __DIR__ . '/../routes/getIp.php',
         ],
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'guest.session' => \App\Http\Middleware\GuestSessionMiddleware::class,
-            'timer' => \App\Http\Middleware\RequestTimerMiddleware::class,
+            'auth' => Authenticate::class,
+            'guest.session' => GuestSessionMiddleware::class,
+            'timer' => RequestTimerMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
@@ -79,6 +88,18 @@ return Application::configure(basePath: dirname(__DIR__))
                     ]
                 ]
             ], 403);
+        });
+
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
+            return response()->json([
+                'errors' => [
+                    [
+                        'status' => 401,
+                        'message' => 'Unauthenticated.',
+                        'source' => $request->path()
+                    ]
+                ]
+            ], 401);
         });
 
         $exceptions->render(function (MethodNotAllowedHttpException $e, Request $request) {
@@ -134,7 +155,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 'errors' => [
                     [
                         'status' => 500,
-                        'message' => 'Internal server error',
+                        'message' => $e->getMessage(),
                         'source' => $request->path()
                     ]
                 ]

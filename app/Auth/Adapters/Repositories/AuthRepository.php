@@ -18,7 +18,9 @@ class AuthRepository implements AuthRepositoryPort
                 'data' => [
                     'token' => $token,
                     'username' => $authenticatedUser->username,
+                    'email' => $authenticatedUser->email,
                     'name' => $authenticatedUser->name,
+                    'role' => $authenticatedUser->role,
                 ],
                 'message' => 'Authenticated'
             ];
@@ -38,6 +40,7 @@ class AuthRepository implements AuthRepositoryPort
         return [
             'data' => [
                 'username' => $authenticatedUser->username,
+                'email' => $authenticatedUser->email,
                 'name' => $authenticatedUser->name,
                 'role' => $authenticatedUser->role,
             ],

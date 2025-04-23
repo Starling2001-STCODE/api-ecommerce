@@ -12,8 +12,8 @@ class UpdateAttributeService
     {
         $this->attributeRepository = $attributeRepository;
     }
-    public function execute(string $name): Attributes
+    public function execute(string $id, array $data): Attributes
     {
-        return $this->attributeRepository->findByName($name);
+        return $this->attributeRepository->update($id, $data);
     }
 }

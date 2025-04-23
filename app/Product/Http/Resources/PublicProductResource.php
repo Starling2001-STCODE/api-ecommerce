@@ -14,14 +14,12 @@ class PublicProductResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'sale_price' => Number::currency($this->sale_price, in: 'DOP'),
-            'sku' => $this->sku,
             'brand' => $this->brand,
             'weight' => $this->weight,
             'dimensions' => $this->dimensions,
             'featured' => $this->featured,
             'rating_average' => $this->rating_average,
             'tags' => $this->tags,
-            'img' => $this->img,
             'category' => [
                 'id' => $this->category['id'] ?? null,
                 'name' => $this->category['name'] ?? null,
@@ -30,8 +28,26 @@ class PublicProductResource extends JsonResource
                 'id' => $this->size['id'] ?? null,
                 'name' => $this->size['name'] ?? null,
             ],
+            'images' => collect($this->limitedImages ?? [])->map(function ($img) {
+                return [
+                    'id' => $img->id,
+                    'url' => $img->url,
+                ];
+            }),
+            'preview_variant_images' => optional($this->previewVariant)->previewImages?->map(function ($img) {
+                return [
+                    'id' => $img->id,
+                    'url' => $img->url,
+                ];
+            }),
+            'attribute_value_preview_images' => $this->attributeValuePreviewImages?->map(function ($img) {
+                return [
+                    'id' => $img->id,
+                    'url' => $img->url,
+                ];
+            }),       
             'links' => [
-                'self' => route('products.public.show', ['product' => $this->id]),
+                'self' => route('publicproducts.public.show', ['product' => $this->id]),
             ],
         ];
     }

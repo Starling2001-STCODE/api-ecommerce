@@ -6,6 +6,7 @@ use App\Core\Controllers\BaseController;
 use App\Product\Domain\Services\FindProductByIdService;
 use App\Product\Domain\Services\ListProductsService;
 use App\Product\Http\Resources\PublicProductResource;
+use App\Product\Http\Resources\PublicProductDetailResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -29,8 +30,8 @@ class ProductPublicController extends BaseController
     }
     public function showProductPublic(string $id): JsonResponse
     {
-        $product = $this->findProductByIdService->execute($id);
-        return (new PublicProductResource($product))
+        $product = $this->findProductByIdService->execute($id, false);
+        return (new PublicProductDetailResource($product))
             ->response()
             ->setStatusCode(200);
     }

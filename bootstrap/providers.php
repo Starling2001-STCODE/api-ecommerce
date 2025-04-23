@@ -11,4 +11,12 @@ return [
     App\Product\ProductServiceProvider::class,
     App\Attribute\AttributeServiceProvider::class,
     App\AttributeValue\AttributeValueServiceProvider::class,
+    App\AttrCategory\AttrCategoryServiceProvider::class,
+    App\ProductVariant\ProductVariantServiceProvider::class,
+    App\VariantAttributeValue\VariantAttributeValueServiceProvider::class,
+    App\ProductImage\ProductImageServiceProvider::class,
+    App\VariantImage\VariantImageServiceProvider::class,
+    App\AttributeValueImage\AttributeValueImageServiceProvider::class,
+    App\Inventory\InventoryServiceProvider::class,
+    \App\InventoryTransaction\InventoryTransactionServiceProvider::class,
 ];

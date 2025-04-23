@@ -4,9 +4,9 @@ use App\Product\Adapters\Controllers\ProductPublicController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['guest.session', 'timer'])->group(function () {
-    Route::get('/products', [ProductPublicController::class, 'getProductPublic'])
+    Route::get('/publicproducts', [ProductPublicController::class, 'getProductPublic'])
     ->name('products.public.index');
 
-    Route::get('/products/{product}', [ProductPublicController::class, 'showProductPublic'])
-    ->name('products.public.show');
+    Route::get('/publicproducts/{product}', [ProductPublicController::class, 'showProductPublic'])
+    ->name('publicproducts.public.show');
 });

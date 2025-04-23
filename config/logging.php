@@ -57,6 +57,12 @@ return [
             'channels' => explode(',', env('LOG_STACK', 'single')),
             'ignore_exceptions' => false,
         ],
+        
+        'product_factory' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/product_factory.log'),
+            'level' => 'info',
+        ],
 
         'single' => [
             'driver' => 'single',

@@ -2,54 +2,148 @@
 
 namespace Database\Factories;
 
+use App\Models\{
+    Product,
+    ProductVariant,
+    Attribute,
+    AttributeValue,
+    ProductVariantAttributeValue,
+    Inventory
+};
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
+
 
 class ProductFactory extends Factory
 {
+    protected $model = Product::class;
+
     public function definition(): array
     {
-        $categories = [
-           '01JQAHSQ9841MG5J7QHTR2G9T1',
-        ];
-        $img = [
-            'accesorios_04',
-            'apple-watch',
-            'bolso_10',
-            'CAMISETA_01',
-            'chaqueta_05',
-            'Movil_07',
-            'pelota_09',
-            'reloj_02',
-            'smarphone_03',
-            'sombrero_06',
-            'lampara_08',
-         ];
- 
-
-        $brands = ['BodyFitt', 'SunVision', 'SteelWear', 'BlueDenim', 'UrbanStyle', 'FitWear', 'SoundPro', 'TechFit', 'GameTech'];
-        $tags = ['nuevo', 'oferta', 'popular', 'eco', 'limitado', 'edición especial'];
-
         return [
             'id' => Str::ulid(),
-            'name' => 'Producto ' . fake()->unique()->words(3, true),
-            'description' => $this->faker->sentence(12),
-            'cost_price' => $this->faker->randomFloat(2, 3, 30),
-            'sale_price' => $this->faker->randomFloat(2, 35, 80),
-            'sku' => 'SKU-' . strtoupper(Str::random(8)),
-            'brand' => $this->faker->randomElement($brands),
-            'weight' => $this->faker->randomFloat(2, 0.1, 2),
-            'dimensions' => $this->faker->numberBetween(10, 50) . 'x' . $this->faker->numberBetween(10, 50) . 'cm',
+            'name' => 'Producto ' . fake()->unique()->words(3, true) . ' ' . Str::random(6),
+            'description' => fake()->sentence(12),
+            'cost_price' => fake()->randomFloat(2, 10, 50),
+            'sale_price' => fake()->randomFloat(2, 60, 120),
+            'brand' => fake()->randomElement(['BodyFitt', 'SteelWear', 'TechFit']),
+            'weight' => fake()->randomFloat(2, 0.1, 2),
+            'dimensions' => fake()->numberBetween(10, 50) . 'x' . fake()->numberBetween(10, 50) . 'cm',
             'status' => 'active',
-            'featured' => $this->faker->boolean(),
-            'rating_average' => $this->faker->randomFloat(2, 3.0, 5.0),
-            'tags' => json_encode($this->faker->randomElements($tags, 3)),
-            'category_id' => $this->faker->randomElement($categories),
-            'img' => $this->faker->randomElement($img),
-            'size_id' => '01JQAHSQ9N58J331FZ9V5Z004D',
-            'user_id' => '01JQAHSQQT8ZKGHWQ4MRD0QP36',
-            'created_at' => now(),
-            'updated_at' => now(),
+            'featured' => fake()->boolean(),
+            'rating_average' => fake()->randomFloat(2, 3.5, 5.0),
+            'tags' => fake()->randomElements(['nuevo', 'oferta', 'popular'], 2),
+            'category_id' => '01JSAE1385BAFNVXYQG5RNJPNP', 
+            'size_id' => '01JSAEMZ1P5SRJ5MH390Q75BJ6',
+            'user_id' => '01JSADVF0B1MBAWYVXG8Y8YX6F',
         ];
     }
+
+    // public function configure(): static
+    // {
+    //     return $this->afterCreating(function (Product $product) {
+    //         $attributes = Attribute::whereHas('categories', function ($q) use ($product) {
+    //             $q->where('category_id', $product->category_id)
+    //               ->where('attribute_category.required', true);
+    //         })->with('values')->get();
+    
+    //         foreach (range(1, 10) as $i) {
+    //             $sku = 'VAR-' . Str::ulid()->toBase32(); 
+                    
+    //             $variant = ProductVariant::create([
+    //                 'product_id' => $product->id,
+    //                 'sku' => $sku,
+    //                 'price' => fake()->randomFloat(2, 60, 120),
+    //                 'cost_price' => fake()->randomFloat(2, 10, 50),
+    //                 'sale_price' => fake()->randomFloat(2, 80, 140),
+    //                 'is_active' => true,
+    //             ]);
+    
+    //             foreach ($attributes as $attribute) {
+    //                 $value = $attribute->values->random();
+    //                 ProductVariantAttributeValue::create([
+    //                     'product_variant_id' => $variant->id,
+    //                     'attribute_id' => $attribute->id,
+    //                     'attribute_value_id' => $value->id,
+    //                 ]);
+    //             }
+    
+    //             Inventory::create([
+    //                 'product_variant_id' => $variant->id,
+    //                 'quantity' => fake()->numberBetween(10, 50),
+    //                 'minimum_stock' => 5,
+    //             ]);
+    
+    //             $images = [];
+    //             foreach (range(1, 7) as $index) {
+    //                 $images[] = UploadedFile::fake()->image("{$sku}-img{$index}.jpg", 500, 500);
+    //             }
+    
+    //             app(\App\VariantImage\Domain\Services\UploadVariantImageService::class)
+    //                 ->execute($variant->id, $sku, $images);
+    //         }
+    //     });
+    // }
+    
+    public function configure(): static
+{
+    return $this->afterCreating(function (Product $product) {
+        $attributes = Attribute::whereHas('categories', function ($q) use ($product) {
+            $q->where('category_id', $product->category_id)
+              ->where('attribute_category.required', true);
+        })->with('values')->get();
+
+        $usedValueIds = [];
+
+        foreach (range(1, 10) as $i) {
+            $sku = 'VAR-' . Str::ulid()->toBase32();
+
+            $variant = ProductVariant::create([
+                'product_id' => $product->id,
+                'sku' => $sku,
+                'price' => fake()->randomFloat(2, 60, 120),
+                'cost_price' => fake()->randomFloat(2, 10, 50),
+                'sale_price' => fake()->randomFloat(2, 80, 140),
+                'is_active' => true,
+            ]);
+
+            foreach ($attributes as $attribute) {
+                $value = $attribute->values->random();
+                $usedValueIds[$value->id] = $attribute->name;
+                ProductVariantAttributeValue::create([
+                    'product_variant_id' => $variant->id,
+                    'attribute_id' => $attribute->id,
+                    'attribute_value_id' => $value->id,
+                ]);
+            }
+
+            Inventory::create([
+                'product_variant_id' => $variant->id,
+                'quantity' => fake()->numberBetween(10, 50),
+                'minimum_stock' => 5,
+            ]);
+        }
+
+        foreach ($usedValueIds as $attributeValueId => $attrName) {
+            if (strtolower($attrName) !== 'color') {
+                continue;
+            }
+        
+            $images = [];
+            foreach (range(1, 3) as $index) {
+                $images[] = UploadedFile::fake()->image("{$attrName}-{$attributeValueId}-{$index}.jpg", 500, 500);
+            }
+            app(\App\AttributeValueImage\Domain\Services\UpdateAttributeValueImageService::class)
+                ->execute(
+                    productId: $product->id,
+                    attributeValueId: $attributeValueId,
+                    productName: $product->name,
+                    images: $images
+                );
+        }
+    });
+}
+
 }

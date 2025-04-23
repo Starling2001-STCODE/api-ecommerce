@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 
 class Product extends BaseModel
 {
@@ -11,7 +13,6 @@ class Product extends BaseModel
         'description',
         'cost_price',
         'sale_price',
-        'sku',
         'brand',
         'weight',
         'dimensions',
@@ -46,6 +47,20 @@ class Product extends BaseModel
     public function size(){
         return $this->belongsTo(Size::class);
     }
+    public function variants(): HasMany
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+    public function inventory()
+    {
+        return $this->hasOne(Inventory::class)
+            ->whereNull('product_variant_id');
+    }
+    
+    public function previewVariant()
+    {
+        return $this->hasOne(ProductVariant::class)->with('previewImages');
+    }
     public function cart_detail(){
         return $this->hasMany(Cart_detail::class);
     }
@@ -69,5 +84,27 @@ class Product extends BaseModel
     public function scopeTagsAll($query, array $tags){
         return $query->whereRaw("tags @> ?", [json_encode($tags)]);
     }
-
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+    public function limitedImages(): HasMany
+    {
+        return $this->hasMany(ProductImage::class)->limit(3);
+    }
+    public function attributeValuePreviewImages()
+    {
+        return $this->hasManyThrough(
+            \App\Models\AttributeValueImage::class,
+            \App\Models\ProductVariant::class,
+            'product_id', // Foreign key on ProductVariant
+            'product_id', // Local key on AttributeValueImage (filtro por producto)
+            'id',         // Local key on Product
+            'product_id'  // Foreign key on AttributeValueImage
+        )
+        ->join('product_variant_attribute_value', 'attribute_value_images.attribute_value_id', '=', 'product_variant_attribute_value.attribute_value_id')
+        ->select('attribute_value_images.*')
+        ->distinct()
+        ->limit(1);
+    }
 }

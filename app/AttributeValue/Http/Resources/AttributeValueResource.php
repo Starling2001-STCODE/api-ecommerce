@@ -17,7 +17,6 @@ class AttributeValueResource extends JsonResource
                 'createdAt' => $this->created_at instanceof \Carbon\Carbon
                 ? $this->created_at->translatedFormat('d M Y H:i')
                 : \Carbon\Carbon::parse($this->created_at)->translatedFormat('d M Y H:i'),
-
             ],
             'relationships' => $this->when(
                 $request->routeIs('attributeValues.show') || $request->routeIs('attributeValues.index'),

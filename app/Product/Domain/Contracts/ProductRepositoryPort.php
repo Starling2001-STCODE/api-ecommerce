@@ -10,6 +10,8 @@ interface ProductRepositoryPort
     public function create(Product $product): Product;
     public function getAll(int $perPage): LengthAwarePaginator;
     public function findById(string $id): Product;
-    // public function update(string $id, array $data): Product;
-    // public function findManyByIds(array $ids): object;
+    public function update(string $id, array $data): Product;
+    public function findManyByIds(array $ids): object;
+    public function delete(string $id): void;
+    public function restore(string $id): void;
 }

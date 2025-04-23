@@ -14,7 +14,7 @@ abstract class BaseRepository
         $this->model = $model;
     }
 
-    public function getAll(int $perPage, array $filters = [], array $sorts = [], string $defaultSort = 'updated_at', array $with = []): LengthAwarePaginator
+    public function getAll(int $perPage, array $filters = [], array $sorts = [], string $defaultSort = '-updated_at', array $with = []): LengthAwarePaginator
     {
         $perPage = max(1, min($perPage, 1000));
 

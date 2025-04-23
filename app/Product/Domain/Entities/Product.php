@@ -9,7 +9,6 @@ class Product
     public $description;
     public $cost_price;
     public $sale_price;
-    public $sku;
     public $brand;
     public $weight;
     public $dimensions;
@@ -24,7 +23,12 @@ class Product
     public $updated_at;
     public $category;
     public $size;
-    public $img;
+    public $inventory;
+    protected array $meta = [];
+    public array $images = [];
+    public array $variants = [];
+    public $previewVariant = null;
+    public $attributeValuePreviewImages = null;
 
     public function __construct(array $data)
     {
@@ -33,7 +37,6 @@ class Product
         $this->description = $data['description'] ?? null;
         $this->cost_price = $data['cost_price'] ?? null;
         $this->sale_price = $data['sale_price'] ?? null;
-        $this->sku = $data['sku'] ?? null;
         $this->brand = $data['brand'] ?? null;
         $this->weight = $data['weight'] ?? null;
         $this->dimensions = $data['dimensions'] ?? null;
@@ -48,7 +51,25 @@ class Product
         $this->updated_at = $data['updated_at'] ?? null;
         $this->category = $data['category'] ?? null;
         $this->size = $data['size'] ?? null;
-        $this->size = $data['img'] ?? null;
+        $this->images = $data['images'] ?? [];
+        $this->variants = $data['variants'] ?? [];
+        $this->previewVariant = $data['preview_variant'] ?? null;
+        $this->attributeValuePreviewImages = $data['attributeValuePreviewImages'] ?? null;
+        $this->inventory = $data['inventory'] ?? null;
+        }
+    public function setMeta(string $key, mixed $value): void
+    {
+        $this->meta[$key] = $value;
+    }
+
+    public function getMeta(string $key): mixed
+    {
+        return $this->meta[$key] ?? null;
+    }
+
+    public function getAllMeta(): array
+    {
+        return $this->meta;
     }
 }
 

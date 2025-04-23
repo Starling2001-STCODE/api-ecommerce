@@ -16,6 +16,9 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\GuestSessionMiddleware;
 use App\Http\Middleware\RequestTimerMiddleware;
+use App\Exceptions\DuplicateVariantException;
+use App\Product\Domain\Exceptions\ProductRequiresVariantsException;
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -30,6 +33,13 @@ return Application::configure(basePath: dirname(__DIR__))
             __DIR__ . '/../routes/attributes.php',
             __DIR__ . '/../routes/attributeValue.php',
             __DIR__ . '/../routes/getIp.php',
+            __DIR__ . '/../routes/attrCategory.php',
+            __DIR__ . '/../routes/products.php',
+            __DIR__ . '/../routes/productVariant.php',
+            __DIR__ . '/../routes/productImage.php',
+            __DIR__ . '/../routes/variantImage.php',
+            __DIR__ . '/../routes/attributeValueImg.php',
+            __DIR__ . '/../routes/inventory-transactions.php',
         ],
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
@@ -61,6 +71,21 @@ return Application::configure(basePath: dirname(__DIR__))
                 ]
             ], 409);
         });
+
+        $exceptions->render(function (DuplicateVariantException $e, Request $request) {
+            return response()->json([
+                'errors' => [
+                    [
+                        'status' => 409,
+                        'code' => $e->getCodeIdentifier(),
+                        'message' => $e->getMessage(),
+                        'duplicated_values' => $e->getDuplicatedValues(),
+                        'source' => $request->path()
+                    ]
+                ]
+            ], 409);
+        });
+
         $exceptions->render(function (ValidationException $e, Request $request) {
             foreach ($e->errors() as $key => $value) {
                 foreach ($value as $message) {
@@ -77,6 +102,17 @@ return Application::configure(basePath: dirname(__DIR__))
             ], 422);
         });
 
+        $exceptions->render(function (ProductRequiresVariantsException $e, Request $request) {
+            return response()->json([
+                'errors' => [
+                    [
+                        'status' => 422,
+                        'message' => $e->getMessage(),
+                        'source' => 'product'
+                    ]
+                ]
+            ], 422);
+        });
 
         $exceptions->render(function (AuthorizationException $e, Request $request) {
             return response()->json([

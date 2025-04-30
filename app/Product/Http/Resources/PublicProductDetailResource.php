@@ -18,6 +18,8 @@ class PublicProductDetailResource extends JsonResource
                 'description' => $this->description,
                 'brand' => $this->brand,
                 'sale_price' => Number::currency($this->sale_price, in: 'DOP'),
+                'quantity' => $this->inventory['quantity'] ?? null,
+                'minimum_stock' => $this->inventory['minimum_stock'] ?? null,
                 'status' => $this->status,
                 'featured' => $this->featured,
                 'ratingAverage' => $this->rating_average,

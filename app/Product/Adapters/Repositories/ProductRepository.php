@@ -22,7 +22,7 @@ class ProductRepository extends BaseRepository implements ProductRepositoryPort
     {
         parent::__construct(ProductModel::class);
     }
-    public function getAll(int $perPage, array $filters = [], array $sorts = [], string $defaultSort = '-updated_at', array $with = ['category', 'size', 'limitedImages',  'previewVariant.previewImages','attributeValuePreviewImages',]): LengthAwarePaginator
+    public function getAll(int $perPage, array $filters = [], array $sorts = [], string $defaultSort = '-updated_at', array $with = ['category', 'size', 'limitedImages',  'previewVariant.previewImages','attributeValuePreviewImages', 'variants.inventory', 'inventory',]): LengthAwarePaginator
     {
         $sorts = [
             AllowedSort::field('name'),

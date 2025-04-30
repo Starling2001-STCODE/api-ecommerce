@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\GuestSessionMiddleware;
+use App\Http\Middleware\CorsMiddleware;
 use App\Http\Middleware\RequestTimerMiddleware;
 use App\Exceptions\DuplicateVariantException;
 use App\Product\Domain\Exceptions\ProductRequiresVariantsException;
@@ -40,6 +41,8 @@ return Application::configure(basePath: dirname(__DIR__))
             __DIR__ . '/../routes/variantImage.php',
             __DIR__ . '/../routes/attributeValueImg.php',
             __DIR__ . '/../routes/inventory-transactions.php',
+            __DIR__ . '/../routes/userVerification.php',
+            __DIR__ . '/../routes/StripeCheckout.php',
         ],
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
@@ -48,6 +51,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'auth' => Authenticate::class,
             'guest.session' => GuestSessionMiddleware::class,
+            'cors' => CorsMiddleware::class,
             'timer' => RequestTimerMiddleware::class,
         ]);
     })

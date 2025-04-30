@@ -53,5 +53,31 @@ class CartRepository extends BaseRepository implements CartRepositoryPort
         $cartModel->update($data);
         return new Cart($cartModel->toArray()); 
     }
+    public function addOrUpdateCartItem(string $cartId, $guestItem): void
+    {
+        $cartModel = $this->model::findOrFail($cartId);
+
+        $existingItem = $cartModel->cart_details()
+            ->where('product_id', $guestItem['product_id'])
+            ->first();
+
+        if ($existingItem) {
+            $existingItem->update([
+                'quantity' => $existingItem->quantity + $guestItem['quantity'],
+            ]);
+        } else {
+            $cartModel->cart_details()->create([
+                'product_id' => $guestItem['product_id'],
+                'variant_id' => $guestItem['variant_id'] ?? null,
+                'quantity' => $guestItem['quantity'],
+                'price_at_time' => $guestItem['price_at_time'],
+            ]);
+        }
+    }
+    public function delete(string $id): void
+    {
+        $cartModel = cartModel::findOrFail($id);
+        $cartModel->delete();
+    }
 
 }

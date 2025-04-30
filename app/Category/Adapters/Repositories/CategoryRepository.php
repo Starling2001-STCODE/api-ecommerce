@@ -17,7 +17,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryPor
         parent::__construct(CategoryModel::class);
     }
 
-    public function getAll(int $perPage, array $filters = ['name'], array $sorts = ['name'], string $defaultSort = 'updated_at', array $with = []): LengthAwarePaginator
+    public function getAll(int $perPage, array $filters = ['name'], array $sorts = ['name'], string $defaultSort = 'updated_at', array $with = ['attributes']): LengthAwarePaginator
     {
         return parent::getAll($perPage, $filters, $sorts, $defaultSort, $with);
     }
@@ -31,7 +31,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryPor
     }
     public function findById(string $id): Category
     {
-        $categoryModel = categoryModel::findOrFail($id);
+        $categoryModel = CategoryModel::with('attributes')->findOrFail($id);
         return new Category($categoryModel->toArray());
     }
     public function update(string $id, array $data): Category

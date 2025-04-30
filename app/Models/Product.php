@@ -94,17 +94,8 @@ class Product extends BaseModel
     }
     public function attributeValuePreviewImages()
     {
-        return $this->hasManyThrough(
-            \App\Models\AttributeValueImage::class,
-            \App\Models\ProductVariant::class,
-            'product_id', // Foreign key on ProductVariant
-            'product_id', // Local key on AttributeValueImage (filtro por producto)
-            'id',         // Local key on Product
-            'product_id'  // Foreign key on AttributeValueImage
-        )
-        ->join('product_variant_attribute_value', 'attribute_value_images.attribute_value_id', '=', 'product_variant_attribute_value.attribute_value_id')
-        ->select('attribute_value_images.*')
-        ->distinct()
-        ->limit(1);
+        return $this->hasMany(AttributeValueImage::class)
+                    ->limit(2);
     }
+    
 }

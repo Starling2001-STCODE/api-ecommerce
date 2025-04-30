@@ -20,7 +20,8 @@ class CartDetailRepository extends BaseRepository implements CartDetailRepositor
        $cartDetail = cartDetailModel::updateOrCreate
        ([
            'cart_id' => $data['cart_id'],
-           'product_id' => $data['product_id']
+           'product_id' => $data['product_id'],
+            'variant_id' => $data['variant_id'],
         ],
         [
             'quantity' => $data['quantity'],
@@ -30,4 +31,20 @@ class CartDetailRepository extends BaseRepository implements CartDetailRepositor
         
         return new CartDetail($cartDetail->toArray()); 
     }
+    public function deleteSelectedItems(array $items, string $cartId): void
+    {
+        foreach ($items as $item) {
+            $query = cartDetailModel::where('cart_id', $cartId)
+                ->where('product_id', $item['product_id']);
+
+            if (!empty($item['variant_id'])) {
+                $query->where('variant_id', $item['variant_id']);
+            } else {
+                $query->whereNull('variant_id');
+            }
+
+            $query->delete();
+        }
+    }
+
 }

@@ -53,7 +53,7 @@ class ProductVariant extends BaseModel
     }
     public function previewImages(): HasMany
     {
-        return $this->hasMany(VariantImage::class)->limit(3);
+        return $this->hasMany(VariantImage::class)->limit(2);
     }
     
     /**

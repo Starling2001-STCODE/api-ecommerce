@@ -4,45 +4,32 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
-
 
 class GuestSessionMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-            // Rate limiting basado en IP: 100 peticiones por minuto
-        // $ip = $request->ip();
-        // $key = 'guest_session_rate:' . $ip;
-        // $maxAttempts = 100;
-        // $decaySeconds = 60;
-
-        // if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
-        //     return response()->json(
-        //         ['message' => 'Demasiadas peticiones. Inténtalo más tarde.'],
-        //         429
-        //     );
-        // }
-        // RateLimiter::hit($key, $decaySeconds);
+        // Solo crear/cargar guest_session si no está autenticado
         if (!Auth::guard('sanctum')->check()) {
-            $encryptedCookie = $request->cookie('guest_session');
             $guestSession = null;
+            $encryptedCookie = $request->cookie('guest_session');
 
             if ($encryptedCookie) {
                 try {
-                    $guestSession = Crypt::decryptString($encryptedCookie);
-                    if (!Str::isUuid($guestSession)) {
-                        $guestSession = null;
-                    } else {
+                    $decrypted = Crypt::decryptString($encryptedCookie);
+                    if (Str::isUuid($decrypted)) {
+                        $guestSession = $decrypted;
                         $request->attributes->set('guest_session', $guestSession);
                     }
                 } catch (\Exception $e) {
-                    $guestSession = null;
+                    Log::warning('Falló desencriptar la guest_session cookie.', ['error' => $e->getMessage()]);
                 }
             }
+
             if (!$guestSession) {
                 $newSession = Str::uuid()->toString();
                 $request->attributes->set('guest_session_new', $newSession);
@@ -51,22 +38,24 @@ class GuestSessionMiddleware
 
         $response = $next($request);
 
+        // Si se generó una nueva sesión, la escribimos en cookie
         if ($request->attributes->has('guest_session_new')) {
             $newSession = $request->attributes->get('guest_session_new');
             $encryptedValue = Crypt::encryptString($newSession);
 
             $response->headers->setCookie(cookie(
-                'guest_session',
-                $encryptedValue,
-                60 * 24 * 30,  // 30 días
-                null,          // path
-                null,          // domain
-                false,         // secure (true en producción HTTPS)
-                true,         // httpOnly
-                true,          // raw
-                false          // SameSite
+                'guest_session',            // Nombre de la cookie
+                $encryptedValue,             // Valor cifrado
+                60 * 24 * 30,                // Duración: 30 días
+                '/',                         // Path
+                null,                        // Dominio: actual
+                app()->environment('production'), // Secure true solo en producción
+                true,                        // HttpOnly
+                false,                       // Raw
+                'Lax'                       // SameSite: None (permite cross-site)
             ));
         }
+
         return $response;
     }
 }

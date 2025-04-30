@@ -6,6 +6,7 @@ class CartDetail
 {
     public $id;
     public $product_id;
+    public $variant_id;
     public $quantity;
     public $price_at_time;
     public $cart_id;
@@ -18,6 +19,7 @@ class CartDetail
     {
         $this->id = $data['id'] ?? null;
         $this->product_id = $data['product_id'] ?? null;
+        $this->variant_id = $data['variant_id'] ?? null;
         $this->quantity = $data['quantity'] ?? null;
         $this->price_at_time = $data['price_at_time'] ?? null;
         $this->cart_id = $data['cart_id'] ?? null;

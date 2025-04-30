@@ -25,7 +25,7 @@ class UploadVariantImageService
             $extension = $image->getClientOriginalExtension();
            
             $slug =  Str::slug(trim($sku));
-            $timestamp = now()->timestamp;
+            $timestamp = now()->format('YmdHisv');
             
             $imageName = "{$slug}-{$timestamp}.{$extension}";
             $path = Storage::disk('public')->putFileAs(

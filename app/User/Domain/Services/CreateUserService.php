@@ -3,7 +3,9 @@
 namespace App\User\Domain\Services;
 
 use App\User\Domain\Contracts\UserRepositoryPort;
-use App\User\Domain\Entities\User;
+use App\User\Domain\Services\SendEmailVerificationService;
+use App\User\Domain\Entities\User as DomainUser;
+use App\Models\User as EloquentUser;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -11,19 +13,25 @@ use Illuminate\Support\Facades\Log;
 class CreateUserService
 {
     private UserRepositoryPort $userRepository;
+    private SendEmailVerificationService $sendEmailVerificationService;
 
-    public function __construct(UserRepositoryPort $userRepository)
+    public function __construct(UserRepositoryPort $userRepository, SendEmailVerificationService $sendEmailVerificationService // ⬅️ FALTA
+    ) 
     {
         $this->userRepository = $userRepository;
+        $this->sendEmailVerificationService = $sendEmailVerificationService;
     }
 
-    public function execute(array $data): User
+    public function execute(array $data): DomainUser
     {
         return DB::transaction(function () use ($data) {
             $password = Hash::make($data['password']);
             $data['password'] = $password;
-            $user = new User($data);
-            return $this->userRepository->create($user);
+            $user = new DomainUser($data);
+            $createdUser = $this->userRepository->create($user);
+            $eloquentUser = EloquentUser::where('id', $createdUser->id)->firstOrFail();
+            $this->sendEmailVerificationService->executeFor($eloquentUser);
+            return $createdUser;
         });
     }
 }

@@ -29,6 +29,7 @@ class UserRepository extends BaseRepository implements UserRepositoryPort
             'password' => $user->password,
             'username' => $user->username,
             'role' => $user->role,
+            'phone' => $user->phone,
         ]);
 
         return new User($userModel->toArray());
@@ -37,6 +38,14 @@ class UserRepository extends BaseRepository implements UserRepositoryPort
     public function findById(string $id): User
     {
         $userModel = UserModel::findOrFail($id);
+        return new User($userModel->toArray());
+    }
+    public function findByEmail(string $email): ?User
+    {
+        $userModel = userModel::where('email', $email)->first();
+        if (!$userModel) {
+            return null;
+        }
         return new User($userModel->toArray());
     }
 

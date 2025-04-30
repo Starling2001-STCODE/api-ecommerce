@@ -4,11 +4,10 @@ namespace App\Category\Domain\Entities;
 
 class Category
 {
-    /**
-     * Create a new class instance.
-     */
+
     public $id;
     public $name;
+    // public $attributes;
     public $created_at;
     public $updated_at;
     public function __construct(array $data)
@@ -17,5 +16,6 @@ class Category
         $this->name = $data['name'];
         $this->created_at = $data['created_at'] ?? null;
         $this->updated_at = $data['updated_at'] ?? null;
+        // $this->attributes = $data['attributes'] ?? null;
     }
 }

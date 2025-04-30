@@ -52,7 +52,7 @@ class CreateProductVariantService
                         'sku'         => $variant['sku'],
                         'price'       => $variant['price'],
                         'cost_price'  => $variant['cost_price'] ?? null,
-                        'sale_price'  => $variant['sale_price'] ?? null,
+                        'sale_price'  => $variant['price'] ?? null,
                         'is_active'   => $variant['is_active'] ?? true,
                     ]);
         

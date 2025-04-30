@@ -27,7 +27,7 @@ class UploadProductImageService
             $extension = $image->getClientOriginalExtension();
            
             $slug =  Str::slug(trim($productName));
-            $timestamp = now()->timestamp;
+            $timestamp = now()->format('YmdHisv');
             
             $imageName = "{$slug}-{$timestamp}.{$extension}";
             $path = Storage::disk('public')->putFileAs(

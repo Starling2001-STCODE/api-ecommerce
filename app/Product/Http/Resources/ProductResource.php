@@ -20,7 +20,7 @@ class ProductResource extends JsonResource
                 'name' => $this->resource->name,
                 'description' => $this->description,
                 'brand' => $this->brand,
-                'salePrice' => Number::currency($this->sale_price, in: 'USD', locale: 'en_US'),
+                'salePrice' => Number::currency($this->sale_price, in: 'DOP', locale: 'es_DO'),
                 'costPrice' => Number::currency($this->cost_price, in: 'DOP', locale: 'es_DO'),
                 'status' => $this->status,
                 'featured' => $this->featured,

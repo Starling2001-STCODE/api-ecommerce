@@ -12,9 +12,9 @@ class Cart extends BaseModel
         'user_id',
     ];
     public function users(){
-        return $this->belongsTo(User::class); // (one to many)
+        return $this->belongsTo(User::class);
     }
     public function cart_details(){
-        return $this->hasMany(Cart_detail::class); // (one to many)
+        return $this->hasMany(Cart_detail::class);
     }
 }

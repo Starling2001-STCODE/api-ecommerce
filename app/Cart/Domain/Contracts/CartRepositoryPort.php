@@ -12,4 +12,7 @@ interface CartRepositoryPort
         public function findByUserId(string $user_id): Cart;
         public function findBySessionId(string $session_id): Cart;
         public function update(string $id, array $data): Cart;
+        public function addOrUpdateCartItem(string $cartId, $guestItem): void;
+        public function delete(string $cartId): void;
+
 }

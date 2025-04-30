@@ -13,11 +13,32 @@ class PublicProductResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'sale_price' => Number::currency($this->sale_price, in: 'DOP'),
+            'sale_price' => Number::currency(
+                $this->variants && $this->variants->isNotEmpty() && $this->variants->first()?->price !== null
+                    ? $this->variants->first()->price
+                    : $this->sale_price,
+               in: 'DOP', locale: 'es_DO'
+            ),
             'brand' => $this->brand,
+            'stock_warning' => $this->when(
+                $this->inventory && $this->inventory->quantity,
+                fn () => [
+                    'quantity' => $this->inventory->quantity,
+                    'minimum_stock' => $this->inventory->minimum_stock,
+                ],
+                    $this->when(
+                    $this->previewVariant && $this->previewVariant->inventory
+                    && $this->previewVariant->inventory->quantity <= $this->previewVariant->inventory->minimum_stock,
+                    fn () => [
+                        'quantity' => $this->previewVariant->inventory->quantity,
+                        'minimum_stock' => $this->previewVariant->inventory->minimum_stock,
+                    ]
+                )
+            ),
             'weight' => $this->weight,
             'dimensions' => $this->dimensions,
             'featured' => $this->featured,
+            'status' => $this->status,
             'rating_average' => $this->rating_average,
             'tags' => $this->tags,
             'category' => [

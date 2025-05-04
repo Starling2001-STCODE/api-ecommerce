@@ -6,7 +6,7 @@ use App\Cart\Domain\Contracts\CartRepositoryPort;
 use App\CartDetail\Domain\Contracts\CartDetailRepositoryPort;
 use App\Cart\Domain\Services\FindCartByUserId;
 use App\Cart\Domain\Services\FindBySessionId;
-use App\Cart\Domain\Services\ValidateCartItemsService; // 👈 Importante
+use App\Cart\Domain\Services\ValidateCartItemsService;
 use App\Cart\Domain\Entities\Cart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;

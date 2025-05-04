@@ -21,7 +21,7 @@ class MigrateGuestCartService
         CartRepositoryPort $cartRepository,
         FindCartByUserId $findCartByUserId,
         FindBySessionId $findBySessionId,
-        ValidateCartItemsService $validateCartItemsService // 👈 Inyectamos el servicio
+        ValidateCartItemsService $validateCartItemsService 
     )
     {
         $this->cartRepository = $cartRepository;

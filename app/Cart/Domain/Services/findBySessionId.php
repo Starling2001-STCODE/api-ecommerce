@@ -4,7 +4,7 @@ namespace App\Cart\Domain\Services;
 use App\Cart\Domain\Contracts\CartRepositoryPort;
 use App\Cart\Domain\Entities\Cart;
 use Illuminate\Support\Facades\Auth;
-class findBySessionId
+class FindBySessionId
 {
     private CartRepositoryPort $cartRepository;
     public function __construct(

@@ -4,6 +4,7 @@ namespace App\StripeCheckout\Domain\Services;
 
 use App\Order\Domain\Contracts\OrderRepositoryPort;
 use App\InventoryTransaction\Domain\Services\CreateSaleService;
+use App\Notifications\Services\SnsService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Stripe\Webhook;
@@ -13,13 +14,15 @@ class HandleStripeWebhookService
 {
     private OrderRepositoryPort $orderRepository;
     private CreateSaleService $createSaleService;
-
+    private SnsService $snsService;
     public function __construct(
         OrderRepositoryPort $orderRepository,
-        CreateSaleService $createSaleService
+        CreateSaleService $createSaleService,
+        SnsService $snsService
     ) {
         $this->orderRepository = $orderRepository;
         $this->createSaleService = $createSaleService;
+        $this->snsService = $snsService;
     }
 
     public function execute(string $payload): void
@@ -69,14 +72,12 @@ class HandleStripeWebhookService
                 abort(400, 'Order not found');
             }
 
-            // Doble validación: no actualizar si ya está pagada
             if ($order->status === 'paid') {
                 Log::info('Order already marked as paid.', ['order_id' => $order->id]);
                 DB::commit();
                 return;
             }
 
-            // Validar también el payment_status que envía Stripe
             if (isset($session->payment_status) && $session->payment_status !== 'paid') {
                 Log::warning('Payment not completed yet.', [
                     'order_id' => $order->id,
@@ -91,7 +92,6 @@ class HandleStripeWebhookService
             ]);
             Log::info('Order marked as paid.', ['order_id' => $order->id]);
 
-            // Formar estructura de productos para CreateSaleService
             $saleData = [
                 'note' => 'Venta de productos vía Checkout',
                 'user_id' => $order->user_id ?? null,
@@ -103,13 +103,28 @@ class HandleStripeWebhookService
                         'quantity' => $item['quantity'],
                     ];
                 }, $order->items),
-            ];            
+            ];
 
             Log::info('Sale data prepared for CreateSaleService.', ['saleData' => $saleData]);
 
             $this->createSaleService->execute($saleData);
-
             Log::info('Sale transaction created successfully.', ['order_id' => $order->id]);
+
+            $message = "🎉 ¡Gracias por tu compra!\n\n" .
+                    "Orden: #{$order->display_order_id}\n" .
+                    "Total: $" . number_format($order->total, 2) . " USD\n\n" .
+                    "Pronto recibirás más información sobre tu envío.\n\n" .
+                    "- Equipo de DomiClick.";
+
+            $this->snsService->publish(
+                $message,
+                [
+                    'order_id' => ['DataType' => 'String', 'StringValue' => $order->id],
+                    'user_id' => ['DataType' => 'String', 'StringValue' => $order->user_id ?? 'guest'],
+                    'total' => ['DataType' => 'Number', 'StringValue' => (string) $order->total],
+                ]
+            );
+            Log::info('SNS Notification sent for paid order.', ['order_id' => $order->id]);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -118,6 +133,8 @@ class HandleStripeWebhookService
             throw $e;
         }
     }
+
+
 
     private function handleExpiredSession($session): void
     {

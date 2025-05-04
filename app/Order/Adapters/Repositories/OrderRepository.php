@@ -20,8 +20,10 @@ class OrderRepository extends BaseRepository implements OrderRepositoryPort
     }
     public function create(Order $order): Order
     {
+        $nextOrderNumber = str_pad(OrderModel::count() + 1, 6, '0', STR_PAD_LEFT);
         $model = OrderModel::create([
             'id' => $order->id,
+            'display_order_id' => 'ORD-' . $nextOrderNumber,
             'user_id' => $order->user_id,
             'status' => $order->status,
             'session_id' => $order->session_id,

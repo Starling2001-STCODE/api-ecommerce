@@ -102,8 +102,8 @@ class ValidateCartItemsService
     {
         $quantity = $item['quantity'] ?? 1;
         $inventory = $product->inventory;
-
-        if (!$inventory || ($inventory->quantity ?? 0) < $quantity) {
+    
+         if (!$inventory || ($inventory->quantity ?? 0) < $quantity) {
             throw new OutOfStockException(
                 $item['id'] ?? $product->id,
                 $quantity,

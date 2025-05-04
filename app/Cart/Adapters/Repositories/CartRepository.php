@@ -59,6 +59,7 @@ class CartRepository extends BaseRepository implements CartRepositoryPort
 
         $existingItem = $cartModel->cart_details()
             ->where('product_id', $guestItem['product_id'])
+            ->where('variant_id', $guestItem['variant_id'] ?? null)
             ->first();
 
         if ($existingItem) {
@@ -74,6 +75,7 @@ class CartRepository extends BaseRepository implements CartRepositoryPort
             ]);
         }
     }
+
     public function delete(string $id): void
     {
         $cartModel = cartModel::findOrFail($id);

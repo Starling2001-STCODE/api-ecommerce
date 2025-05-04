@@ -5,12 +5,13 @@ namespace App\InventoryTransaction\Adapters\Controllers;
 use App\Core\Controllers\BaseController;
 // use App\InventoryTransaction\Domain\Services\AcceptTransferService;
 // use App\InventoryTransaction\Domain\Services\CancelTransferService;
-// use App\InventoryTransaction\Domain\Services\CreateAdjustmentService;
+use App\InventoryTransaction\Domain\Services\CreateSaleService;
 use App\InventoryTransaction\Http\Requests\CreatePurchaseRequest;
 use App\InventoryTransaction\Domain\Services\CreatePurchaseService;
 use App\InventoryTransaction\Domain\Services\FindInventoryTransactionByIdService;
 // use App\InventoryTransaction\Domain\Services\CreateTransferService;
 // use App\InventoryTransaction\Http\Requests\CreateAdjustmentRequest;
+use App\InventoryTransaction\Http\Requests\CreateSaleRequest;
 use App\InventoryTransaction\Http\Requests\CreateTransferRequest;
 use App\InventoryTransaction\Http\Resources\InventoryTransactionResource;
 use App\InventoryTransaction\Domain\Services\ListInventoryTransactionsService;
@@ -24,7 +25,7 @@ class InventoryTransactionController extends BaseController
     private FindInventoryTransactionByIdService $findInventoryTransactionByIdService;
     private CreatePurchaseService $createPurchaseService;
     // private CreateAdjustmentService $createAdjustmentService;
-    // private CreateTransferService $createTransferService;
+    private CreateSaleService $createSaleService;
     // private CancelTransferService $cancelTransferService;
     // private AcceptTransferService $acceptTransferService;
     private ListInventoryTransactionsService $inventoryTransactionRepository;
@@ -33,7 +34,7 @@ class InventoryTransactionController extends BaseController
         CreatePurchaseService $createPurchaseService,
         FindInventoryTransactionByIdService $findInventoryTransactionByIdService,
         // CreateAdjustmentService $createAdjustmentService,
-        // CreateTransferService $createTransferService,
+        CreateSaleService $createSaleService,
         // CancelTransferService $cancelTransferService,
         // AcceptTransferService $acceptTransferService,
         ListInventoryTransactionsService $inventoryTransactionRepository
@@ -41,7 +42,7 @@ class InventoryTransactionController extends BaseController
         $this->createPurchaseService = $createPurchaseService;
         $this->findInventoryTransactionByIdService = $findInventoryTransactionByIdService;
         // $this->createAdjustmentService = $createAdjustmentService;
-        // $this->createTransferService = $createTransferService;
+        $this->createSaleService = $createSaleService;
         // $this->cancelTransferService = $cancelTransferService;
         // $this->acceptTransferService = $acceptTransferService;
         $this->inventoryTransactionRepository = $inventoryTransactionRepository;
@@ -57,6 +58,12 @@ class InventoryTransactionController extends BaseController
     {
         $data = $request->validated();
         $this->createPurchaseService->execute($data);
+        return response()->json(null, 201);
+    }
+    public function createSale(CreateSaleRequest $request)
+    {
+        $data = $request->validated();
+        $this->createSaleService->execute($data);
         return response()->json(null, 201);
     }
     public function showById(string $id)

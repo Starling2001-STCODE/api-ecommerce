@@ -27,7 +27,13 @@ class InventoryTransaction extends BaseModel
             ->withPivot('product_id', 'quantity', 'cost_price', 'sale_price')
             ->withTimestamps();
     }
-
+    public function productsSimple(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'product_inventory_transaction')
+            ->whereNull('product_variant_id')
+            ->withPivot('product_id', 'quantity', 'cost_price', 'sale_price')
+            ->withTimestamps();
+    }
     /**
      * Usuario que ejecutó la transacción.
      */

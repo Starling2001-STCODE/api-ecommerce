@@ -2,13 +2,21 @@
 
 namespace App\Order\Http\Resources;
 
-class OrderResource
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class OrderResource extends JsonResource
 {
-    /**
-     * Create a new class instance.
-     */
-    public function __construct()
+    public function toArray(Request $request): array
     {
-        //
+        return [
+            'id' => $this->id,
+            'display_order_id' => $this->display_order_id,
+            'status' => $this->status,
+            'created_at' => $this->created_at,
+            'expires_at' => $this->expires_at,
+            'checkout_url' => $this->checkout_url,
+            'total' => $this->total,
+        ];
     }
 }

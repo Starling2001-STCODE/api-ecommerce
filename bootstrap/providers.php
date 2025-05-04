@@ -19,5 +19,6 @@ return [
     App\AttributeValueImage\AttributeValueImageServiceProvider::class,
     App\Inventory\InventoryServiceProvider::class,
     \App\InventoryTransaction\InventoryTransactionServiceProvider::class,
+    \App\ShippingAddress\ShippingAddressServiceProvider::class,
     App\Order\OrderServiceProvider::class,
 ];

@@ -52,8 +52,6 @@ class CreateStripeCheckoutSessionService
             'success_url' => $baseUrl . '/checkout/success?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => $baseUrl . '/checkout/cancel',
         ]);
-        Log::info('session stripe:', $session->toArray());
-
         $this->orderRepository->update($order->id, [
             'session_id' => $session->id,
             'checkout_url' => $session->url,

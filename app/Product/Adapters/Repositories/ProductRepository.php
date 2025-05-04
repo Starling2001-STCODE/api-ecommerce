@@ -6,6 +6,7 @@ use App\Core\Repositories\BaseRepository;
 use App\Product\Domain\Contracts\ProductRepositoryPort;
 use App\Models\Product as ProductModel;
 use App\Product\Domain\Entities\Product;
+use App\Inventory\Domain\Entities\Inventory;
 use App\Product\Sorts\CategoryNameSort;
 use App\Product\Sorts\SizeNameSort;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -77,7 +78,11 @@ class ProductRepository extends BaseRepository implements ProductRepositoryPort
         ])->findOrFail($id);
     
         $productData = $productModel->toArray();
-    
+        
+        if (!empty($productData['inventory'])) {
+            $productData['inventory'] = new Inventory($productData['inventory']);
+        }
+
         $productData['variants'] = $productModel->variants->map(function ($variantModel) use ($productModel) {
             foreach ($variantModel->attributeValues as $attrValueModel) {
                 $images = $attrValueModel->imagesByProduct($productModel->id)->get();
@@ -89,8 +94,6 @@ class ProductRepository extends BaseRepository implements ProductRepositoryPort
     
         return new Product($productData);
     }
-    
-    
     
     public function update(string $id, array $data): Product
     {

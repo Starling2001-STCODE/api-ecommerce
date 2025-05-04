@@ -5,4 +5,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class);
+    Route::put('/user/profile', [UserController::class, 'updateProfile']);
+    Route::get('/user/profile', [UserController::class, 'getProfile']);
 });

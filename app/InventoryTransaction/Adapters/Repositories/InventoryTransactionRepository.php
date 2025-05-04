@@ -114,15 +114,17 @@ class InventoryTransactionRepository extends BaseRepository implements Inventory
 
     public function getAllByProductId(string $product_id): Collection
     {
-        $models = InventoryTransactionModel::with(['products', 'user'])
+        $models = InventoryTransactionModel::with(['productsSimple', 'user'])
             ->where('product_id', $product_id)
             ->get();
-    
+
         return $models->map(fn($model) => new InventoryTransaction([
             ...$model->toArray(),
+            'products' => $model->productsSimple, // <- este campo es la clave
             'user' => $model->user,
         ]));
     }
+
     
     public function getAllByProductVariantId(string $product_variant_id): Collection
     {

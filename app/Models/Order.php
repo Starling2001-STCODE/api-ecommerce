@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Order extends BaseModel
 {
     protected $fillable = [
-        'id', 'user_id', 'status', 'session_id', 'checkout_url', 'expires_at', 'total'
+        'id', 'user_id','display_order_id', 'status', 'session_id', 'checkout_url', 'expires_at', 'total'
     ];
 
     protected $casts = [

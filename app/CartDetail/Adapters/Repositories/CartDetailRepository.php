@@ -46,5 +46,63 @@ class CartDetailRepository extends BaseRepository implements CartDetailRepositor
             $query->delete();
         }
     }
+    public function updateQuantityByProductAndVariant(string $cartId, string $productId, ?string $variantId, int $quantity): void
+    {
+        $query = cartDetailModel::where('cart_id', $cartId)
+            ->where('product_id', $productId);
+    
+        if ($variantId) {
+            $query->where('variant_id', $variantId);
+        } else {
+            $query->whereNull('variant_id');
+        }
+    
+        $cartDetail = $query->firstOrFail();
+        $cartDetail->update(['quantity' => $quantity]);
+    }
+    
+    
+    public function deleteByProductAndVariant(string $cartId, string $productId, ?string $variantId): void
+    {
+        $query = cartDetailModel::where('cart_id', $cartId)
+            ->where('product_id', $productId);
 
+        if ($variantId) {
+            $query->where('variant_id', $variantId);
+        } else {
+            $query->whereNull('variant_id');
+        }
+
+        $query->delete();
+    }
+    public function addOrUpdateByProductAndVariant(string $cartId, array $itemData): void
+    {
+        $query = cartDetailModel::where('cart_id', $cartId)
+            ->where('product_id', $itemData['product_id']);
+    
+        if (!empty($itemData['variant_id'])) {
+            $query->where('variant_id', $itemData['variant_id']);
+        } else {
+            $query->whereNull('variant_id');
+        }
+    
+        $existingItem = $query->first();
+    
+        if ($existingItem) {
+            $existingItem->update([
+                'quantity' => $existingItem->quantity + $itemData['quantity'],
+                'price_at_time' => $itemData['price_at_time'],
+                'updated_at' => now(),
+            ]);
+        } else {
+            cartDetailModel::create([
+                'cart_id' => $cartId,
+                'product_id' => $itemData['product_id'],
+                'variant_id' => $itemData['variant_id'] ?? null,
+                'quantity' => $itemData['quantity'],
+                'price_at_time' => $itemData['price_at_time'],
+            ]);
+        }
+    }
+    
 }

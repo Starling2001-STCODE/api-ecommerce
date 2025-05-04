@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('inventory-transactions', [InventoryTransactionController::class, 'index']);
     Route::post('inventory-transactions/purchases', [InventoryTransactionController::class, 'createPurchase']);
+    Route::post('inventory-transactions/sales', [InventoryTransactionController::class, 'createSale']);
+
     Route::prefix('inventory-transactions')->group(function () {
         Route::get('{id}/product', [InventoryTransactionController::class, 'showById']);
         Route::get('by-product/{product_id}', [InventoryTransactionController::class, 'getByProductId']);

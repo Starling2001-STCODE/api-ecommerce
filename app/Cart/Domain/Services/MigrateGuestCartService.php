@@ -8,6 +8,7 @@ use App\Cart\Domain\Services\FindCartByUserId;
 use App\Cart\Domain\Services\FindBySessionId;
 use App\Cart\Domain\Services\ValidateCartItemsService; // 👈 Importante
 use App\Cart\Domain\Entities\Cart;
+use Illuminate\Support\Facades\Log;
 
 class MigrateGuestCartService
 {
@@ -38,7 +39,6 @@ class MigrateGuestCartService
                 DB::commit();
                 return;
             }
-
             // 1. Validar los items antes de migrarlos
             $validatedItems = $this->validateCartItemsService->execute($items);
 

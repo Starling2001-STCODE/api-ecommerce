@@ -4,6 +4,7 @@ namespace App\Order\Domain\Entities;
 class Order
 {
     public ?string $id;
+    public ?string $display_order_id;
     public ?string $user_id;
     public string $status;
     public ?string $session_id;
@@ -17,6 +18,7 @@ class Order
     public function __construct(array $data)
     {
         $this->id = $data['id'] ?? null;
+        $this->display_order_id = $data['display_order_id'] ?? null;
         $this->user_id = $data['user_id'] ?? null;
         $this->status = $data['status'] ?? 'pending_payment';
         $this->session_id = $data['session_id'] ?? null;

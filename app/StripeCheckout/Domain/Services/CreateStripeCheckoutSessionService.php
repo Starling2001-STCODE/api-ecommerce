@@ -51,13 +51,16 @@ class CreateStripeCheckoutSessionService
             'mode' => 'payment',
             'success_url' => $baseUrl . '/checkout/success?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => $baseUrl . '/checkout/cancel',
-            'expires_at' => time() + 60, 
+            'expires_at' => time() + 1800,
         ]);
         $this->orderRepository->update($order->id, [
             'session_id' => $session->id,
             'checkout_url' => $session->url,
             'expires_at' => Date::parse($session->expires_at)->toDateTimeString(),
         ]);
+        $sessionInstance = StripeSession::retrieve($session->id);
+        $sessionInstance->payment_status = 'unpaid';
+        $sessionInstance->expire();
 
         return $session->url;
     }

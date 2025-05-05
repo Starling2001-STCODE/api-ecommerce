@@ -51,6 +51,7 @@ class CreateStripeCheckoutSessionService
             'mode' => 'payment',
             'success_url' => $baseUrl . '/checkout/success?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => $baseUrl . '/checkout/cancel',
+            'expires_at' => time() + 60, 
         ]);
         $this->orderRepository->update($order->id, [
             'session_id' => $session->id,

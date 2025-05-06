@@ -14,10 +14,11 @@ class PublicProductResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'sale_price' => Number::currency(
-                $this->variants && $this->variants->isNotEmpty() && $this->variants->first()?->price !== null
-                    ? $this->variants->first()->price
-                    : $this->sale_price,
-               in: 'DOP', locale: 'es_DO'
+    optional($this->variants?->firstWhere(fn ($variant) => 
+                    $variant->inventory && $variant->inventory->quantity > 0
+                ))->price ?? $this->sale_price,
+                in: 'DOP', 
+                locale: 'es_DO'
             ),
             'brand' => $this->brand,
             'stock_warning' => $this->when(

@@ -58,9 +58,6 @@ class CreateStripeCheckoutSessionService
             'checkout_url' => $session->url,
             'expires_at' => Date::parse($session->expires_at)->toDateTimeString(),
         ]);
-        $sessionInstance = StripeSession::retrieve($session->id);
-        $sessionInstance->payment_status = 'unpaid';
-        $sessionInstance->expire();
 
         return $session->url;
     }

@@ -57,7 +57,11 @@ class OrderRepository extends BaseRepository implements OrderRepositoryPort
 
     public function findByUserId(string $userId): array
     {
-        $models = OrderModel::with('items')->where('user_id', $userId)->get();
+        $models = OrderModel::with('items')
+            ->where('user_id', $userId)
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
         return $models->map(fn($m) => new Order($m->toArray()))->toArray();
     }
 

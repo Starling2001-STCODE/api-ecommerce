@@ -37,8 +37,6 @@ class PrepareStripeLineItemsService
             ];
         }
 
-        Log::info('Line Items:', $lineItems);
-
         return $lineItems;
     }
 

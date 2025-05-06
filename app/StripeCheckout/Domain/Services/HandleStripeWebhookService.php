@@ -4,9 +4,13 @@ namespace App\StripeCheckout\Domain\Services;
 
 use App\Order\Domain\Contracts\OrderRepositoryPort;
 use App\InventoryTransaction\Domain\Services\CreateSaleService;
-use App\Notifications\Services\SnsService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Order\Adapters\Mail\OrderPaidMail;
+use App\Order\Adapters\Mail\OrderExpiredMail;
+use App\Order\Adapters\Mail\OrderPaymentFailedMail;
+use App\Models\User;
 use Stripe\Webhook;
 use Stripe\Exception\SignatureVerificationException;
 
@@ -14,15 +18,13 @@ class HandleStripeWebhookService
 {
     private OrderRepositoryPort $orderRepository;
     private CreateSaleService $createSaleService;
-    private SnsService $snsService;
+
     public function __construct(
         OrderRepositoryPort $orderRepository,
-        CreateSaleService $createSaleService,
-        SnsService $snsService
+        CreateSaleService $createSaleService
     ) {
         $this->orderRepository = $orderRepository;
         $this->createSaleService = $createSaleService;
-        $this->snsService = $snsService;
     }
 
     public function execute(string $payload): void
@@ -33,11 +35,8 @@ class HandleStripeWebhookService
         try {
             $event = Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
         } catch (SignatureVerificationException $e) {
-            Log::error('Invalid Stripe Webhook signature.', ['error' => $e->getMessage()]);
             abort(400, 'Invalid signature');
         }
-
-        Log::info('Stripe Webhook Event Received:', ['type' => $event->type]);
 
         switch ($event->type) {
             case 'checkout.session.completed':
@@ -54,7 +53,6 @@ class HandleStripeWebhookService
                 break;
 
             default:
-                Log::info('Unhandled Stripe Webhook Event Type', ['type' => $event->type]);
         }
     }
 
@@ -63,26 +61,19 @@ class HandleStripeWebhookService
         DB::beginTransaction();
 
         try {
-            Log::info('Handling successful payment for session.', ['session_id' => $session->id]);
 
             $order = $this->orderRepository->findBySessionId($session->id);
 
             if (!$order) {
-                Log::error('Order not found for session_id.', ['session_id' => $session->id]);
                 abort(400, 'Order not found');
             }
 
             if ($order->status === 'paid') {
-                Log::info('Order already marked as paid.', ['order_id' => $order->id]);
                 DB::commit();
                 return;
             }
 
             if (isset($session->payment_status) && $session->payment_status !== 'paid') {
-                Log::warning('Payment not completed yet.', [
-                    'order_id' => $order->id,
-                    'payment_status' => $session->payment_status,
-                ]);
                 DB::commit();
                 return;
             }
@@ -90,7 +81,6 @@ class HandleStripeWebhookService
             $this->orderRepository->update($order->id, [
                 'status' => 'paid',
             ]);
-            Log::info('Order marked as paid.', ['order_id' => $order->id]);
 
             $saleData = [
                 'note' => 'Venta de productos vía Checkout',
@@ -105,26 +95,12 @@ class HandleStripeWebhookService
                 }, $order->items),
             ];
 
-            Log::info('Sale data prepared for CreateSaleService.', ['saleData' => $saleData]);
-
             $this->createSaleService->execute($saleData);
-            Log::info('Sale transaction created successfully.', ['order_id' => $order->id]);
 
-            $message = "🎉 ¡Gracias por tu compra!\n\n" .
-                    "Orden: #{$order->display_order_id}\n" .
-                    "Total: $" . number_format($order->total, 2) . " USD\n\n" .
-                    "Pronto recibirás más información sobre tu envío.\n\n" .
-                    "- Equipo de DomiClick.";
-
-            $this->snsService->publish(
-                $message,
-                [
-                    'order_id' => ['DataType' => 'String', 'StringValue' => $order->id],
-                    'user_id' => ['DataType' => 'String', 'StringValue' => $order->user_id ?? 'guest'],
-                    'total' => ['DataType' => 'Number', 'StringValue' => (string) $order->total],
-                ]
-            );
-            Log::info('SNS Notification sent for paid order.', ['order_id' => $order->id]);
+            $user = User::find($order->user_id);
+            if ($user) {
+                Mail::to($user->email)->send(new OrderPaidMail($order));
+            }
 
             DB::commit();
         } catch (\Exception $e) {
@@ -134,17 +110,16 @@ class HandleStripeWebhookService
         }
     }
 
-
-
     private function handleExpiredSession($session): void
     {
+        DB::beginTransaction();
+
         try {
             Log::info('Handling expired session.', ['session_id' => $session->id]);
 
             $order = $this->orderRepository->findBySessionId($session->id);
 
             if (!$order) {
-                Log::error('Order not found for session_id.', ['session_id' => $session->id]);
                 abort(400, 'Order not found');
             }
 
@@ -154,8 +129,16 @@ class HandleStripeWebhookService
                 ]);
 
                 Log::info('Order marked as cancelled.', ['order_id' => $order->id]);
+
+                $user = User::find($order->user_id);
+                if ($user) {
+                    Mail::to($user->email)->send(new OrderExpiredMail($order));
+                }
             }
+
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Error handling expired session.', ['error' => $e->getMessage()]);
             throw $e;
         }
@@ -163,13 +146,12 @@ class HandleStripeWebhookService
 
     private function handleFailedPayment($session): void
     {
-        try {
-            Log::info('Handling failed payment.', ['session_id' => $session->id]);
+        DB::beginTransaction();
 
+        try {
             $order = $this->orderRepository->findBySessionId($session->id);
 
             if (!$order) {
-                Log::error('Order not found for session_id.', ['session_id' => $session->id]);
                 abort(400, 'Order not found');
             }
 
@@ -178,9 +160,16 @@ class HandleStripeWebhookService
                     'status' => 'pending_payment',
                 ]);
 
-                Log::warning('Order payment failed, status updated to pending_payment.', ['order_id' => $order->id]);
+
+                $user = User::find($order->user_id);
+                if ($user) {
+                    Mail::to($user->email)->send(new OrderPaymentFailedMail($order));
+                }
             }
+
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Error handling failed payment.', ['error' => $e->getMessage()]);
             throw $e;
         }

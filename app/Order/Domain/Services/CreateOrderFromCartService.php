@@ -18,20 +18,16 @@ class CreateOrderFromCartService
     private OrderItemRepositoryPort $orderItemRepository;
     private CartRepositoryPort $cartRepository;
     private DeleteSelectedCartItemsService $deleteSelectedCartItemsService;
-    private SendOrderEmailService $sendOrderEmailService;
-
     public function __construct(
         OrderRepositoryPort $orderRepository,
         OrderItemRepositoryPort $orderItemRepository,
         CartRepositoryPort $cartRepository,
         DeleteSelectedCartItemsService $deleteSelectedCartItemsService,
-        SendOrderEmailService $sendOrderEmailService
     ) {
         $this->orderRepository = $orderRepository;
         $this->orderItemRepository = $orderItemRepository;
         $this->cartRepository = $cartRepository;
         $this->deleteSelectedCartItemsService = $deleteSelectedCartItemsService;
-        $this->sendOrderEmailService = $sendOrderEmailService;
     }
 
     public function execute(array $validatedCartItems): Order
@@ -53,7 +49,8 @@ class CreateOrderFromCartService
                 'total' => $total,
                 'items' => [],
             ]);
-            $order = $this->orderRepository->create($orderEntity);
+
+            $this->orderRepository->create($orderEntity);
 
             $orderItems = collect($validatedCartItems)->map(function ($item) use ($orderId) {
                 return new OrderItem([
@@ -65,16 +62,16 @@ class CreateOrderFromCartService
                     'price_at_time' => $item['price_at_time'],
                 ]);
             })->all();
- 
+
             $this->orderItemRepository->createMany($orderItems);
             $cart = $this->cartRepository->findByUserId($userId);
             $this->deleteSelectedCartItemsService->execute($validatedCartItems, $cart->id);
-            $orderEntity->items = $orderItems;
+            $order = $this->orderRepository->findById($orderId);
+            $order->items = $orderItems;
 
-            $this->sendOrderEmailService->sendOrderCreated($orderEntity);
-
-            return $orderEntity;
+            return $order;
         });
     }
+
 
 }

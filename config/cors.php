@@ -7,9 +7,10 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        'http://localhost:3000',    // opcional si también usas 3000
-        'http://127.0.0.1:3000',    // opcional
-        'http://localhost:5173',    // ✅ ¡IMPORTANTE! para tu Vite (React)
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',   
+        'http://localhost:5173', 
+        'http://bodyfitt.s3-website-us-east-1.amazonaws.com',
     ],
 
     'allowed_origins_patterns' => [],

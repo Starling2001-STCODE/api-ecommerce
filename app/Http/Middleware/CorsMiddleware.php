@@ -13,9 +13,10 @@ class CorsMiddleware
         $origin = $request->headers->get('Origin');
 
         $allowedOrigins = [
-            'http://localhost:5173',   // ✅ importante
-            'http://localhost:3000',   // (opcional por si abres otro frontend)
-            'http://127.0.0.1:3000',   // (opcional)
+            'http://localhost:5173',  
+            'http://localhost:3000',
+            'http://127.0.0.1:3000',
+            'http://bodyfitt.s3-website-us-east-1.amazonaws.com',  
         ];
 
         $headers = [

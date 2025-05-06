@@ -21,21 +21,28 @@ class PublicProductResource extends JsonResource
                 locale: 'es_DO'
             ),
             'brand' => $this->brand,
-            'stock_warning' => $this->when(
-                $this->inventory && $this->inventory->quantity,
-                fn () => [
-                    'quantity' => $this->inventory->quantity,
-                    'minimum_stock' => $this->inventory->minimum_stock,
-                ],
-                    $this->when(
-                    $this->previewVariant && $this->previewVariant->inventory
-                    && $this->previewVariant->inventory->quantity <= $this->previewVariant->inventory->minimum_stock,
-                    fn () => [
-                        'quantity' => $this->previewVariant->inventory->quantity,
-                        'minimum_stock' => $this->previewVariant->inventory->minimum_stock,
-                    ]
-                )
-            ),
+            'stock_warning' => $this->whenLoaded('variants', function () {
+                $availableVariant = $this->variants->firstWhere(fn ($variant) => 
+                    $variant->inventory && $variant->inventory->quantity > 0
+                );
+
+                if ($availableVariant) {
+                    return [
+                        'quantity' => $availableVariant->inventory->quantity,
+                        'minimum_stock' => $availableVariant->inventory->minimum_stock,
+                    ];
+                }
+
+                if ($this->inventory) {
+                    return [
+                        'quantity' => $this->inventory->quantity,
+                        'minimum_stock' => $this->inventory->minimum_stock,
+                    ];
+                }
+
+                return null;
+            }),
+
             'weight' => $this->weight,
             'dimensions' => $this->dimensions,
             'featured' => $this->featured,

@@ -18,17 +18,20 @@ class CreateOrderFromCartService
     private OrderItemRepositoryPort $orderItemRepository;
     private CartRepositoryPort $cartRepository;
     private DeleteSelectedCartItemsService $deleteSelectedCartItemsService;
+    private SendOrderEmailService $sendOrderEmailService;
 
     public function __construct(
         OrderRepositoryPort $orderRepository,
         OrderItemRepositoryPort $orderItemRepository,
         CartRepositoryPort $cartRepository,
-        DeleteSelectedCartItemsService $deleteSelectedCartItemsService
+        DeleteSelectedCartItemsService $deleteSelectedCartItemsService,
+        SendOrderEmailService $sendOrderEmailService
     ) {
         $this->orderRepository = $orderRepository;
         $this->orderItemRepository = $orderItemRepository;
         $this->cartRepository = $cartRepository;
         $this->deleteSelectedCartItemsService = $deleteSelectedCartItemsService;
+        $this->sendOrderEmailService = $sendOrderEmailService;
     }
 
     public function execute(array $validatedCartItems): Order
@@ -62,11 +65,13 @@ class CreateOrderFromCartService
                     'price_at_time' => $item['price_at_time'],
                 ]);
             })->all();
-
+ 
             $this->orderItemRepository->createMany($orderItems);
             $cart = $this->cartRepository->findByUserId($userId);
             $this->deleteSelectedCartItemsService->execute($validatedCartItems, $cart->id);
             $orderEntity->items = $orderItems;
+
+            $this->sendOrderEmailService->sendOrderCreated($orderEntity);
 
             return $orderEntity;
         });

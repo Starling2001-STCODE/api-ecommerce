@@ -8,7 +8,7 @@ class CreateProductRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // Puedes agregar lógica de autorización aquí si lo necesitas
+        return true;
     }
     public function validated($key = null, $default = null)
     {

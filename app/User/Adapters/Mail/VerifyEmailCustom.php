@@ -22,4 +22,3 @@ class VerifyEmailCustom extends Mailable
                     ->markdown('emails.verify-email');
     }
 }
-// Compare this snippet from resources/views/emails/verify-email.blade.php:

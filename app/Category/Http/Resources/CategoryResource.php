@@ -9,7 +9,6 @@ class CategoryResource extends JsonResource
 {
     public function toArray($request): array
     {
-        // Normaliza a colección aunque venga como array
         $attributes = collect($this->attributes ?? []);
 
         return [

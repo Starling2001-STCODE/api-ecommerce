@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('cart_details', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->integer('quantity'); // Cantidad del producto
+            $table->integer('quantity'); 
             $table->decimal('price_at_time', 10, 2);
             //
-            $table->ulid('cart_id'); // id_cart (Foreign Key)
-            $table->ulid('product_id'); // id_product (Foreign Key)
+            $table->ulid('cart_id'); 
+            $table->ulid('product_id'); 
 
             $table->timestamps();
         });

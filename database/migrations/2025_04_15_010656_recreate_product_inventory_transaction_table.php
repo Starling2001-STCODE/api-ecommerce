@@ -10,15 +10,15 @@ return new class extends Migration {
         Schema::dropIfExists('product_inventory_transaction');
 
         Schema::create('product_inventory_transaction', function (Blueprint $table) {
-            $table->id(); // clave primaria auto incremental
+            $table->id(); 
 
             $table->ulid('inventory_transaction_id');
             $table->ulid('product_id')->nullable();
             $table->ulid('product_variant_id')->nullable();
 
             $table->unsignedInteger('quantity')->default(0);
-            $table->decimal('cost_price', 10, 2)->nullable(); // para compras
-            $table->decimal('sale_price', 10, 2)->nullable(); // para ventas
+            $table->decimal('cost_price', 10, 2)->nullable(); 
+            $table->decimal('sale_price', 10, 2)->nullable(); 
 
             $table->timestamps();
 

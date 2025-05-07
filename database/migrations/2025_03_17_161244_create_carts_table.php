@@ -13,11 +13,9 @@ return new class extends Migration
     {
         Schema::create('carts', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->string('session_id')->nullable(); // Identificador de sesión para usuarios no registrados
-            $table->enum('status', ['active', 'completed', 'abandoned'])->default('active'); // Estado del carrito
-            // Campo (Foreign Key)
+            $table->string('session_id')->nullable();
+            $table->enum('status', ['active', 'completed', 'abandoned'])->default('active');
             $table->ulid('user_id');
-            // Referencias (Foreign Key)
             $table->timestamps();
         });
     }

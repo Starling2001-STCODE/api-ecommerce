@@ -9,15 +9,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->dropUnique(['sku']); // Elimina índice único si lo tiene
-            $table->dropColumn('sku'); // Elimina la columna
+            $table->dropUnique(['sku']); 
+            $table->dropColumn('sku'); 
         });
     }
 
     public function down(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->string('sku')->unique(); // Restaura la columna con restricción única
+            $table->string('sku')->unique(); 
         });
     }
 };

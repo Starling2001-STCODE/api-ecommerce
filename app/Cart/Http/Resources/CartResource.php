@@ -9,9 +9,7 @@ use Illuminate\Http\Request;
 
 class CartResource extends JsonResource
 {
-    /**
-     * Create a new class instance.
-     */
+
     public function toArray(Request $request): array
     {
         $enrichService = app(EnrichCartItemsService::class);
@@ -27,7 +25,7 @@ class CartResource extends JsonResource
                 'updated_at' => $this->updated_at,
             ],
             'relationships' => [
-                'cart_details' => $enrichService->execute($this->cart_details->all()), // 👈 aquí enriquecemos
+                'cart_details' => $enrichService->execute($this->cart_details->all()),
             ],
         ];
     }

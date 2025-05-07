@@ -24,7 +24,7 @@ class CreateCartService
         CartDetailRepositoryPort $cartDetailRepository,
         FindCartByUserId $findCartByUserId,
         FindBySessionId $findBySessionId,
-        ValidateCartItemsService $validateCartItemsService // 👈 Inyectamos el validador
+        ValidateCartItemsService $validateCartItemsService 
     ) {
         $this->cartRepository = $cartRepository;
         $this->cartDetailRepository = $cartDetailRepository;
@@ -42,27 +42,23 @@ class CreateCartService
                 ? Auth::guard('sanctum')->id()
                 : guest_session();
 
-            // Buscar carrito dependiendo si es usuario o guest
             $cart = Auth::guard('sanctum')->check()
                 ? $this->findCartByUserId->execute($identifier)
                 : $this->findBySessionId->execute($identifier);
 
-            // 1. Validar y sanitizar los ítems antes de guardar
             $validatedItems = $this->validateCartItemsService->execute($data['items']);
 
-            // 2. Agrupar por producto
             $groupedItems = collect($validatedItems)
                 ->groupBy('product_id')
                 ->map(function ($groupedProducts, $product_id) {
                     return [
                         'product_id' => $product_id,
-                        'quantity' => $groupedProducts->sum('quantity'), // suma cantidades
-                        'price_at_time' => $groupedProducts->last()['price_at_time'], // último precio corregido
+                        'quantity' => $groupedProducts->sum('quantity'), 
+                        'price_at_time' => $groupedProducts->last()['price_at_time'],
                     ];
                 })
                 ->values();
 
-            // 3. Guardar los detalles del carrito
             $cartDetails = [];
 
             foreach ($groupedItems as $item) {

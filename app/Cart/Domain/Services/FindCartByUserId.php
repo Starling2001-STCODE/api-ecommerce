@@ -16,7 +16,6 @@ class FindCartByUserId
     public function execute(string $userId): Cart
     {
         try {
-            // Intentamos obtener el carrito para el usuario
             return $this->cartRepository->findByUserId($userId);
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {

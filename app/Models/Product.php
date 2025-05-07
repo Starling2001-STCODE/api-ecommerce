@@ -26,20 +26,20 @@ class Product extends BaseModel
         'img',
     ];
     protected $casts = [
-        'id' => 'string', // ULID se maneja como string
-        'cost_price' => 'decimal:2', // Decimal con 2 decimales para el precio de costo
-        'sale_price' => 'decimal:2', // Decimal con 2 decimales para el precio de venta
-        'weight' => 'decimal:2', // Decimal con 2 decimales para el peso
-        'rating_average' => 'decimal:2', // Decimal con 2 decimales para la calificación promedio
-        'featured' => 'boolean', // Campo booleano para el producto destacado
-        'tags' => 'array', // Los tags son un campo JSON, así que se convierte en un array
-        'category_id' => 'string', // ULID se maneja como string
-        'size_id' => 'string', // ULID se maneja como string
-        'user_id' => 'string', // ULID se maneja como string
-        'status' => 'string', // El estado es un string con valores 'active' e 'inactive'
+        'id' => 'string', 
+        'cost_price' => 'decimal:2', 
+        'sale_price' => 'decimal:2', 
+        'weight' => 'decimal:2', 
+        'rating_average' => 'decimal:2', 
+        'featured' => 'boolean', 
+        'tags' => 'array',
+        'category_id' => 'string', 
+        'size_id' => 'string',
+        'user_id' => 'string',
+        'status' => 'string', 
     ];
     public function user(){
-        return $this->belongsTo(User::class); // (one to many)
+        return $this->belongsTo(User::class); 
     }
     public function category(){
         return $this->belongsTo(Category::class);

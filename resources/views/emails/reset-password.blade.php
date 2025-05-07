@@ -1,14 +1,24 @@
-@component('mail::message')
-# Restablece tu contraseña
+@component('mail::layout')
 
-Haz clic en el botón para establecer una nueva contraseña:
+{{-- Encabezado --}}
+# ¿Olvidaste tu contraseña?
 
+Hola,
+
+Recibimos una solicitud para restablecer tu contraseña.
+Haz clic en el siguiente botón para crear una nueva contraseña:
+
+{{-- Botón de acción --}}
 @component('mail::button', ['url' => $resetUrl])
-Restablecer contraseña
+Cambiar Contraseña
 @endcomponent
 
-Si no solicitaste esto, puedes ignorarlo.
+---
 
-Gracias,<br>
-{{ config('app.name') }}
+**¿No hiciste esta solicitud?**
+No te preocupes, simplemente ignora este correo y no se realizarán cambios.
+
+Gracias por confiar en nosotros.
+**El equipo de {{ config('app.name') }}**
+
 @endcomponent

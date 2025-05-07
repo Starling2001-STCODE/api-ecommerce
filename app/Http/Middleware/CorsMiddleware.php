@@ -26,7 +26,6 @@ class CorsMiddleware
             'Access-Control-Allow-Credentials' => 'true',
         ];
 
-        // 🚨 Si es un preflight (OPTIONS), responder inmediato
         if ($request->getMethod() === 'OPTIONS') {
             return response()->json([], Response::HTTP_NO_CONTENT, $headers);
         }

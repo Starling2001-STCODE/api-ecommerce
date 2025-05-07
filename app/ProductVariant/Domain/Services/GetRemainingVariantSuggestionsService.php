@@ -24,10 +24,8 @@ class GetRemainingVariantSuggestionsService
 
     public function execute(string $productId): array
     {
-        // 1. Obtener todas las combinaciones sugeridas
         $allCombinations = $this->getVariantCombinationsService->execute($productId);
 
-        // 2. Filtrar las combinaciones ya creadas como variantes
         return array_values(array_filter($allCombinations, function ($combo) use ($productId) {
             $valueIds = collect($combo['attribute_values'])->pluck('attribute_value_id')->toArray();
             return !$this->variantAttributeValueRepository->existsCombination($productId, $valueIds);

@@ -12,6 +12,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        // (opcional) Puedes dejar el `down` vacío o recrear la tabla anterior si quieres.
     }
 };

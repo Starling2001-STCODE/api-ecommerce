@@ -29,7 +29,6 @@ class FindOrderByIdService
             abort(403, 'No autorizado a ver esta orden.');
         }
 
-        // ✅ Aquí corregimos: tratamos $item como array, no como objeto
         $enrichedItems = [];
         foreach ($order->items as $item) {
             $productId = $item['product_id'] ?? null;

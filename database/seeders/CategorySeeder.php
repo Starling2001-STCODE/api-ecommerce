@@ -19,7 +19,6 @@ class CategorySeeder extends Seeder
         $color = Attribute::where('name', 'color')->first();
         $size = Attribute::where('name', 'talla')->first();
 
-        // Asociar atributos a categoría
         $conMasDeUnaVariante->attributes()->attach([
             $color->id => ['id' => Str::ulid(), 'required' => true],
             $size->id => ['id' => Str::ulid(), 'required' => true],

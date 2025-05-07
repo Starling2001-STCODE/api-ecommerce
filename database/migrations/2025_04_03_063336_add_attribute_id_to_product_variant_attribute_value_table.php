@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::table('product_variant_attribute_value', function (Blueprint $table) {
             $table->ulid('attribute_id')->after('product_variant_id');
     
-            // Opcionalmente puedes agregar la FK si es necesario
             $table->foreign('attribute_id')
                   ->references('id')
                   ->on('attributes')

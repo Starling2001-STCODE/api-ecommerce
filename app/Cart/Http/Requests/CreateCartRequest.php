@@ -6,33 +6,25 @@ use App\Core\Http\Requests\BaseFormRequest;
 
 class CreateCartRequest extends BaseFormRequest
 {
-    /**
-     * Determina si el usuario está autorizado para realizar esta solicitud.
-     *
-     * @return bool
-     */
+
     public function authorize(): bool
     {
-        return true; // Puedes cambiar esto si necesitas controlar permisos
+        return true; 
     }
 
-    /**
-     * Obtiene las reglas de validación para la solicitud.
-     *
-     * @return array
-     */
+
     public function rules(): array
     {
         return [
-            'items' => 'required|array|min:1', // Asegura que "items" sea un array con al menos un elemento
+            'items' => 'required|array|min:1', 
             'items.*.product_id' => [
                 'required',
                 'string',
-                'size:26', // Un ULID siempre tiene 26 caracteres
-                'regex:/^[0-9A-Za-z]{26}$/', // Solo caracteres alfanuméricos
+                'size:26', 
+                'regex:/^[0-9A-Za-z]{26}$/',
             ],
-            'items.*.quantity' => 'required|integer|min:1', // La cantidad debe ser un entero positivo
-            'items.*.price_at_time' => 'required|numeric|min:0', // El precio debe ser un número positivo
+            'items.*.quantity' => 'required|integer|min:1', 
+            'items.*.price_at_time' => 'required|numeric|min:0',
         ];
     }
 

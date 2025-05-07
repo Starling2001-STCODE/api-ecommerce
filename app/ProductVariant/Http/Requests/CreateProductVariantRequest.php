@@ -8,7 +8,7 @@ class CreateProductVariantRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // Modifícalo si necesitas auth personalizada
+        return true;
     }
 
     public function rules(): array

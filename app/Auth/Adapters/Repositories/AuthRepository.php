@@ -84,13 +84,12 @@ class AuthRepository implements AuthRepositoryPort
             'email' => $googleUserData['email'],
             'username' => explode('@', $googleUserData['email'])[0], 
             'email_verified_at' => now(), 
-            'role' => 'empleado', // Luego lo cambiarás a 'cliente'
+            'role' => 'empleado',
             'password' => Hash::make($temporaryPassword),
             'google_id' => $googleUserData['google_id'] ?? null,
             'provider' => 'google',
-            'avatar' => $googleUserData['picture'] ?? null, // <-- INCLUIMOS AVATAR
+            'avatar' => $googleUserData['picture'] ?? null, 
         ]);
-        // 🚀 Opcional: luego podemos enviar un email aquí con la contraseña temporal
         // $this->sendTemporaryPasswordEmail($user, $temporaryPassword);
         return $user;
     }
@@ -129,11 +128,10 @@ class AuthRepository implements AuthRepositoryPort
         }
 
         $user = UserModel::where('email', $record->email)->first();
-
+        
         if (!$user) {
             throw new \Exception('Usuario no encontrado.');
         }
-
         $user->password = Hash::make($newPassword);
         $user->save();
 

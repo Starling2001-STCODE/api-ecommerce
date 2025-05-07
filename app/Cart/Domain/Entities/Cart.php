@@ -24,12 +24,10 @@ class Cart
             $this->created_at = $data->created_at;
             $this->updated_at = $data->updated_at;
 
-            // Aquí el punto clave: mantener modelos, no arrays planos
             $this->cart_details = $data->relationLoaded('cart_details')
                 ? $data->cart_details
                 : collect([]);
         } else {
-            // Si realmente necesitas aceptar arrays también:
             $this->id = $data['id'] ?? null;
             $this->session_id = $data['session_id'] ?? null;
             $this->status = $data['status'] ?? null;

@@ -16,8 +16,8 @@ return new class extends Migration
             $table->ulid('product_variant_id');
 
             $table->unsignedInteger('quantity')->default(0);
-            $table->decimal('cost_price', 10, 2)->nullable(); // solo aplica en compras
-            $table->decimal('sale_price', 10, 2)->nullable(); // solo aplica en ventas
+            $table->decimal('cost_price', 10, 2)->nullable(); 
+            $table->decimal('sale_price', 10, 2)->nullable(); 
 
             $table->timestamps();
 

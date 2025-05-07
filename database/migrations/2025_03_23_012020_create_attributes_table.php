@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('attributes', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->string('name')->unique(); // Ej: Color, Tamaño
+            $table->string('name')->unique(); 
             $table->timestamps();
         });
     }

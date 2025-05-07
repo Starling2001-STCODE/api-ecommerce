@@ -60,26 +60,22 @@ class ValidateCartItemsService
             throw new ProductVariantNotFoundException($variantId);
         }
 
-        // Validar atributos
         $this->validateAttributes(
             $variant['attribute_values'] ?? [],
             $item['attributes'] ?? [],
             $item['id'] ?? $variantId
         );
 
-        // Validar stock
         $availableStock = $variant['quantity'] ?? 0;
 
         if ($availableStock < $quantity) {
             throw new OutOfStockException($variantId, $quantity, $availableStock);
         }
 
-        // Validar precio
         if (!isset($variant['sale_price'])) {
             throw new InvalidCartItemException("Falta el precio de la variante {$variantId}");
         }
 
-        // Generar nombre y buscar imagen principal
         $attributeNames = collect($variant['attribute_values'] ?? [])
             ->pluck('attribute_value_name')
             ->implode(', ');
@@ -89,7 +85,6 @@ class ValidateCartItemsService
             ?? $product->preview_image
             ?? null;
 
-        // Asignar datos actualizados
         $item['price_at_time'] = (float) $variant['sale_price'];
         $item['stock_at_time'] = (int) $availableStock;
         $item['name'] = $product->name . (!empty($attributeNames) ? " - {$attributeNames}" : '');

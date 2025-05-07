@@ -120,7 +120,7 @@ class InventoryTransactionRepository extends BaseRepository implements Inventory
 
         return $models->map(fn($model) => new InventoryTransaction([
             ...$model->toArray(),
-            'products' => $model->productsSimple, // <- este campo es la clave
+            'products' => $model->productsSimple, 
             'user' => $model->user,
         ]));
     }

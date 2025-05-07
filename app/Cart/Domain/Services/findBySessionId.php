@@ -16,7 +16,6 @@ class FindBySessionId
     public function execute(string $session_id): Cart
     {
         try {
-            // Intentamos obtener el carrito para el usuario
             return $this->cartRepository->findBySessionId( $session_id);
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {

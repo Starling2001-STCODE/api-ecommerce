@@ -8,7 +8,7 @@ class InventoryProductSimpleRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // o agrega lógica de autorización si es necesario
+        return true;
     }
 
     public function rules(): array

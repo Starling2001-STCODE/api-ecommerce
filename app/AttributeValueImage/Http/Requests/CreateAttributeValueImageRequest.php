@@ -14,8 +14,8 @@ class CreateAttributeValueImageRequest extends FormRequest
     {
         return [
             'images'   => 'required|array|min:1',
-            'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:8048', // 2MB por imagen
-            'sku' => 'required|string|max:255', // necesario para renombrar las imágenes
+            'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:8048', 
+            'sku' => 'required|string|max:255',
         ];
     }
 

@@ -8,15 +8,15 @@ class UploadProductImageRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // Puedes aplicar lógica de autorización si es necesario
+        return true; 
     }
 
     public function rules(): array
     {
         return [
             'images'   => 'required|array|min:1',
-            'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048', // 2MB por imagen
-            'product_name' => 'required|string|max:255', // necesario para renombrar las imágenes
+            'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048', 
+            'product_name' => 'required|string|max:255', 
         ];
     }
 

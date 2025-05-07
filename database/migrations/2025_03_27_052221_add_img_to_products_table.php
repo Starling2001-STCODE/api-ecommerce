@@ -7,7 +7,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->string('img')->nullable()->after('name'); // O el campo que desees
+            $table->string('img')->nullable()->after('name');
         });
     }
 

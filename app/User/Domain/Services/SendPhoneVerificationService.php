@@ -20,7 +20,6 @@ class SendPhoneVerificationService
         DB::transaction(function () use ($userId) {
             $user = $this->userRepository->findById($userId);
 
-            // Generar un código de 6 dígitos aleatorio
             $code = random_int(100000, 999999);
 
             $this->userRepository->update($user->id, [
@@ -28,7 +27,6 @@ class SendPhoneVerificationService
                 'phone_verification_sent_at' => now(),
             ]);
 
-            // Aquí deberías integrar un servicio de SMS real (Twilio, etc.)
             Log::info("Código SMS enviado al teléfono {$user->phone}: {$code}");
         });
     }

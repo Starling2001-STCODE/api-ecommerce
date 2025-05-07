@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('shipping_addresses', function (Blueprint $table) {
-            $table->ulid('id')->primary();   // ULID en vez de id incremental
+            $table->ulid('id')->primary();   
             $table->foreignUlid('user_id')->constrained('users')->onDelete('cascade');
             $table->string('street_address')->nullable();
             $table->string('house_number')->nullable();

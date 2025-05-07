@@ -26,7 +26,7 @@ class ProductSeeder extends Seeder
         }
 
         $end = Carbon::now();
-        $duration = $start->diffForHumans($end, true); // Ej: "12 minutes"
+        $duration = $start->diffForHumans($end, true); 
         Log::channel('product_factory')->info("🎉 Inserción completada a las {$end->toDateTimeString()} (Duración: {$duration})");
     }
 }

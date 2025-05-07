@@ -13,5 +13,6 @@ interface AuthRepositoryPort
     public function me(): array |null;
     public function loginByEmail(string $email): array | null;
     public function createUserFromGoogle(array $googleUserData): UserModel;
-
+    public function resetPassword(string $token, string $newPassword): void;
+    public function sendResetPasswordEmail(string $email): void;
 }

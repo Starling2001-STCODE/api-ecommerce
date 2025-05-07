@@ -55,6 +55,7 @@ return [
     'url' => env('APP_URL', 'http://localhost'),
     'stripe_url' => env('APP_URL_STRIPE', env('APP_URL')),
     'stripe_url_image' => env('APP_URL_STRIPE_IMAGE', env('APP_URL')),
+    'frontend_url' => env('FRONTEND_URL', ''), 
 
     /*
     |--------------------------------------------------------------------------

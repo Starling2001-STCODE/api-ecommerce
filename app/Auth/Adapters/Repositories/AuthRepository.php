@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Auth\Domain\Exceptions\InvalidCredentialsException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\User\Adapters\Mail\ResetPasswordMail;
+use Illuminate\Support\Facades\DB;
 
 class AuthRepository implements AuthRepositoryPort
 {
@@ -87,10 +90,54 @@ class AuthRepository implements AuthRepositoryPort
             'provider' => 'google',
             'avatar' => $googleUserData['picture'] ?? null, // <-- INCLUIMOS AVATAR
         ]);
-
         // 🚀 Opcional: luego podemos enviar un email aquí con la contraseña temporal
         // $this->sendTemporaryPasswordEmail($user, $temporaryPassword);
-
         return $user;
     }
+    public function sendResetPasswordEmail(string $email): void
+    {
+        $user = UserModel::where('email', $email)->first();
+
+        if (!$user) {
+            throw new \Exception('El correo electrónico no está registrado.');
+        }
+
+        $token = Str::random(64);
+
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $email],
+            [
+                'token' => $token,
+                'created_at' => now()
+            ]
+        );
+
+        $resetUrl = config('app.frontend_url') . "/reset-password/$token";
+
+        Mail::to($email)->send(new ResetPasswordMail($resetUrl));
+    }
+    public function resetPassword(string $token, string $newPassword): void
+    {
+        $record = DB::table('password_reset_tokens')->where('token', $token)->first();
+
+        if (!$record) {
+            throw new \Exception('Token inválido.');
+        }
+
+        if (now()->diffInMinutes($record->created_at) > 60) {
+            throw new \Exception('El token ha expirado.');
+        }
+
+        $user = UserModel::where('email', $record->email)->first();
+
+        if (!$user) {
+            throw new \Exception('Usuario no encontrado.');
+        }
+
+        $user->password = Hash::make($newPassword);
+        $user->save();
+
+        DB::table('password_reset_tokens')->where('email', $user->email)->delete();
+    }
+
 }

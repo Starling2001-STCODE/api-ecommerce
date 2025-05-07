@@ -56,7 +56,7 @@ class CreateStripeCheckoutSessionService
             'line_items' => $lineItems,
             'mode' => 'payment',
             'success_url' => $baseUrl . '/checkout/success?session_id={CHECKOUT_SESSION_ID}',
-            'cancel_url' => $baseUrl . '/checkout/cancel',
+            'cancel_url' => $baseUrl . '/',
             'expires_at' => time() + 1800,
         ]);
 

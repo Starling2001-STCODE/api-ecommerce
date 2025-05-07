@@ -42,7 +42,7 @@ class CreateStripeCheckoutSessionService
 
     public function execute(array $rawCartItems): string
     {
-        $baseUrl = config('app.url');
+        $baseUrl = config('app.stripe_url');
         
         $enrichedItems = $this->enrichCartItemsService->execute($rawCartItems);
         $validatedItems = $this->validateCartItemsService->execute($enrichedItems);

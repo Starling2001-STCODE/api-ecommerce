@@ -71,8 +71,7 @@ class Product extends BaseModel
     public function scopeCategoryName($query, $search)
     {
         return $query->whereHas('category', function ($query) use ($search) {
-            $query->where('name', 'like', "%$search%");
-            Log::info($query->toSql());
+            $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%']);
         });
     }
     public function scopeSizeName($query, $search)

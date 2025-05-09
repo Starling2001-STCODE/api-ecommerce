@@ -113,7 +113,10 @@ class AuthRepository implements AuthRepositoryPort
 
         $resetUrl = config('app.frontend_url') . "/reset-password/$token";
 
-        Mail::to($email)->send(new ResetPasswordMail($resetUrl));
+        $fullName = $user->name;
+        $parts = explode(' ', trim($fullName));
+        $userName = isset($parts[1]) ? $parts[0] . ' ' . $parts[1] : $parts[0];
+        Mail::to($email)->send(new ResetPasswordMail($resetUrl, $userName));
     }
     public function resetPassword(string $token, string $newPassword): void
     {

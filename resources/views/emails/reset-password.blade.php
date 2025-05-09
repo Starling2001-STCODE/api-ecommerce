@@ -1,24 +1,21 @@
-@component('mail::layout')
+@component('mail::message')
+# Recupera el acceso a tu cuenta
 
-{{-- Encabezado --}}
-# ¿Olvidaste tu contraseña?
+Hola {{ $userName }},
 
-Hola,
+Recibimos una solicitud para cambiar tu contraseña en **{{ config('app.name') }}**.
 
-Recibimos una solicitud para restablecer tu contraseña.
-Haz clic en el siguiente botón para crear una nueva contraseña:
-
-{{-- Botón de acción --}}
 @component('mail::button', ['url' => $resetUrl])
-Cambiar Contraseña
+Crear nueva contraseña
 @endcomponent
 
----
+Si no realizaste esta solicitud, puedes ignorar este mensaje.
 
-**¿No hiciste esta solicitud?**
-No te preocupes, simplemente ignora este correo y no se realizarán cambios.
+Saludos,
+**{{ config('app.name') }}**
 
-Gracias por confiar en nosotros.
-**El equipo de {{ config('app.name') }}**
+@slot('footer')
+© {{ now()->year }} {{ config('app.name') }}. Todos los derechos reservados.
+@endslot
 
 @endcomponent

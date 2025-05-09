@@ -11,10 +11,12 @@ class ResetPasswordMail extends Mailable
     use Queueable, SerializesModels;
 
     public $resetUrl;
+    public $userName;
 
-    public function __construct(string $resetUrl)
+    public function __construct(string $resetUrl, string $userName)
     {
         $this->resetUrl = $resetUrl;
+        $this->userName = $userName;
     }
 
     public function build()

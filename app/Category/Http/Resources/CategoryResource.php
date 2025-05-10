@@ -19,13 +19,19 @@ class CategoryResource extends JsonResource
                 'created_at' => $this->created_at,
                 'updated_at' => $this->updated_at,
                 'requires_variants' => $attributes->where('pivot.required', true)->isNotEmpty(),
-                // 'attributes' => $attributes->map(function ($attribute) {
-                //     return [
-                //         'id' => $attribute['id'] ?? $attribute->id,
-                //         'name' => $attribute['name'] ?? $attribute->name,
-                //         'required' => $attribute['pivot']['required'] ?? $attribute->pivot->required ?? false,
-                //     ];
-                // })->values(),
+                'attributes' => $attributes->map(function ($attribute) {
+                    return [
+                        'id' => $attribute['id'] ?? $attribute->id,
+                        'name' => $attribute['name'] ?? $attribute->name,
+                        'required' => $attribute['pivot']['required'] ?? $attribute->pivot->required ?? false,
+                        'values' => collect($attribute['values'] ?? [])->map(function ($value) {
+                            return [
+                                'id' => $value['id'] ?? $value->id,
+                                'value' => $value['value'] ?? $value->value,
+                            ];
+                        })->values(),
+                    ];
+                })->values(),
             ],
         ];
     }

@@ -31,7 +31,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryPor
     }
     public function findById(string $id): Category
     {
-        $categoryModel = CategoryModel::with('attributes')->findOrFail($id);
+        $categoryModel = CategoryModel::with('attributes.values')->findOrFail($id);
         return new Category($categoryModel->toArray());
     }
     public function update(string $id, array $data): Category

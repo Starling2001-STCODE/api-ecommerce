@@ -11,8 +11,8 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        $total = 1;
-        $batch = 1;
+        $total = 1000; 
+        $batch = 100;
 
         $start = Carbon::now();
         Log::channel('product_factory')->info("🚀 Inicio de inserción masiva de productos: {$start->toDateTimeString()}");

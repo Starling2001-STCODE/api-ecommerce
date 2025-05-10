@@ -13,6 +13,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedSort;
 use App\ProductVariant\Domain\Mappers\ProductVariantMapper;
+use Illuminate\Support\Str;
 
 class ProductRepository extends BaseRepository implements ProductRepositoryPort
 {
@@ -42,6 +43,19 @@ class ProductRepository extends BaseRepository implements ProductRepositoryPort
             AllowedFilter::exact('status'),
             AllowedFilter::exact('featured'),
         ];
+        foreach (request()->query('filter', []) as $key => $val) {
+            if (Str::startsWith($key, 'attribute_')) {
+                $attributeId = Str::after($key, 'attribute_');
+                $filters[] = AllowedFilter::callback($key, function ($query, $value) use ($attributeId) {
+                    $query->whereHas('variants.attributeValues', function ($q) use ($value, $attributeId) {
+                        $q->whereIn('attribute_value_id', (array) $value)
+                        ->whereHas('attribute', function ($q2) use ($attributeId) {
+                            $q2->where('id', $attributeId);
+                        });
+                    });
+                });
+            }
+        }
         return  parent::getAll($perPage, $filters, $sorts, $defaultSort, $with);
     }
     public function create(Product $product): Product

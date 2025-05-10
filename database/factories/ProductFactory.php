@@ -35,7 +35,7 @@ class ProductFactory extends Factory
             'featured' => fake()->boolean(),
             'rating_average' => fake()->randomFloat(2, 3.5, 5.0),
             'tags' => fake()->randomElements(['nuevo', 'oferta', 'popular'], 2),
-            'category_id' => '01JSAE1385BAFNVXYQG5RNJPNP', 
+            'category_id' => '01JSJ849SP5STXTJ3BCEM7QD7Y', 
             'size_id' => '01JSAEMZ1P5SRJ5MH390Q75BJ6',
             'user_id' => '01JSADVF0B1MBAWYVXG8Y8YX6F',
         ];

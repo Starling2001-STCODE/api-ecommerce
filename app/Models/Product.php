@@ -74,6 +74,20 @@ class Product extends BaseModel
             $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%']);
         });
     }
+    public function scopeAttribute($query, $value, string $column)
+    {
+        $attributeId = str_replace('attribute_', '', $column);
+
+        return $query->whereHas('variants.attributeValues', function ($q) use ($value, $attributeId) {
+            $q->where(function ($subQuery) use ($value, $attributeId) {
+                $subQuery->where('attribute_value_id', $value)
+                        ->orWhere('id', $value);
+            })
+            ->whereHas('attribute', function ($q) use ($attributeId) {
+                $q->where('id', $attributeId);
+            });
+        });
+    }
     public function scopeSizeName($query, $search)
     {
         return $query->whereHas('size', function ($query) use ($search) {
